@@ -114,7 +114,7 @@ public class BoardBasic {
                         for (int j1 = -1; j1 <= 1; j1++) {
                             aroundCell = "" + (rCellX + i1) + (rCellY + j1);
                             if (moveCellsSet.contains(aroundCell)) {
-                                if (((moveFromX - 1 + i1) >= 0 && (moveFromX - 1 + j1) <= 5) && ((moveFromY - 1 + i1) >= 0 && (moveFromY - 1 + j1) <= 5)) {
+                                if ((rCellX  + i1) >= 1 && (rCellX + i1) <= 6 && (rCellY  + j1) >= 1 && (rCellY  + j1) <= 6) {
                                     if (moveCellsMap.get(aroundCell) == null) {
                                         if (boardStateInt[moveFromX - 1][moveFromY - 1] * boardStateInt[rCellX - 1 + i1][rCellY - 1 + j1] == -1) {
                                             if (!moveCellsMapEnemy.containsKey(aroundCell)) {
