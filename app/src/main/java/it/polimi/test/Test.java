@@ -198,7 +198,7 @@ public class Test {
         Player black = new Player("black");
         BoardBasic board = new BoardBasic();
 
-        if(true){
+        if(false){
             readGame("testGame1",board,white,black);
             board.refreshBoard(white,black);
         }
@@ -206,7 +206,7 @@ public class Test {
         String action;
         char act;
         int x1, y1, x2, y2;
-        Piece p1, p2;
+        Piece p1, p2, p3;
         Mage m;
         boolean ctrl;
 
@@ -227,6 +227,7 @@ public class Test {
                         if(board.getColor().equals("white")){
                             p1=white.choosePieceAlive(x1,y1);
                             p2=black.choosePieceAlive(x2,y2);
+                            p3=white.choosePieceAlive(x2,y2);
                             if(board.judgeMove(p1,x2,y2)&&p1.getState()!='f'){
                                 p1.moveTo(x2,y2);
                                 ctrl = false;
@@ -236,12 +237,18 @@ public class Test {
                                     white.pieceDie(p1);
                                     black.pieceDie(p2);
                                 }
+                                if(p3.getType().equals("castle"))                                        //LOGIC ERROR
+                                {
+                                    Castle c = (Castle)p3;
+                                    ctrl=!p1.station(c);
+                                }
                             }
                             else ctrl = true;
                         }
                         else {
                             p1=black.choosePieceAlive(x1,y1);
                             p2=white.choosePieceAlive(x2,y2);
+                            p3=black.choosePieceAlive(x2,y2);
                             if(board.judgeMove(p1,x2,y2)&&p1.getState()!='f'){
                                 p1.moveTo(x2,y2);
                                 ctrl = false;
@@ -250,6 +257,10 @@ public class Test {
                                 else if(board.excuteCombat(p1,p2)==3) {
                                     black.pieceDie(p1);
                                     white.pieceDie(p2);
+                                }
+                                if(p3.getType().equals("Castle")){                                     //LOGIC ERROR
+                                    Castle c = (Castle)p3;
+                                    ctrl=!p1.station(c);
                                 }
                             }
                             else ctrl =true;
@@ -323,24 +334,42 @@ public class Test {
                             m=white.chooseMage();
                             p1=white.choosePieceAlive(x1,y1);
                             p2=black.choosePieceAlive(x2,y2);
-                            ctrl = !board.excuteTeleport(m,p1,x2,y2);
-                            if(board.excuteCombat(p1,p2)==1)white.pieceDie(p1);
-                            else if(board.excuteCombat(p1,p2)==2)black.pieceDie(p2);
-                            else if(board.excuteCombat(p1,p2)==3){
-                                white.pieceDie(p1);
-                                black.pieceDie(p2);
+                            p3=white.choosePieceAlive(x2,y2);
+                            if(p2.getType().equals("Castle"))ctrl = true;
+                            else{
+                                ctrl = !board.excuteTeleport(m,p1,x2,y2);
+                                if(board.excuteCombat(p1,p2)==1)white.pieceDie(p1);
+                                else if(board.excuteCombat(p1,p2)==2)black.pieceDie(p2);
+                                else if(board.excuteCombat(p1,p2)==3){
+                                    white.pieceDie(p1);
+                                    black.pieceDie(p2);
+                                }
+                                if(p3.getType().equals("castle"))                                         //LOGIC ERROR
+                                {
+                                    Castle c = (Castle)p3;
+                                    ctrl = !p1.station(c);
+                                }
                             }
                         }
                         else {
                             m=black.chooseMage();
                             p1=black.choosePieceAlive(x1,y1);
                             p2=white.choosePieceAlive(x2,y2);
-                            ctrl = !board.excuteTeleport(m,p1,x2,y2);
-                            if(board.excuteCombat(p1,p2)==1)black.pieceDie(p1);
-                            else if(board.excuteCombat(p1,p2)==2)white.pieceDie(p2);
-                            else if(board.excuteCombat(p1,p2)==3){
-                                black.pieceDie(p1);
-                                white.pieceDie(p2);
+                            p3=black.choosePieceAlive(x2,y2);
+                            if(p2.getType().equals("Castle"))ctrl = true;
+                            else{
+                                ctrl = !board.excuteTeleport(m,p1,x2,y2);
+                                if(board.excuteCombat(p1,p2)==1)black.pieceDie(p1);
+                                else if(board.excuteCombat(p1,p2)==2)white.pieceDie(p2);
+                                else if(board.excuteCombat(p1,p2)==3){
+                                    black.pieceDie(p1);
+                                    white.pieceDie(p2);
+                                }
+                                if(p3.getType().equals("castle"))                                        //LOGIC ERROR
+                                {
+                                    Castle c = (Castle)p3;
+                                    ctrl = !p1.station(c);
+                                }
                             }
                         }
                     }

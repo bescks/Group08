@@ -8,10 +8,10 @@ import it.polimi.test.boards.*;
 public class Player {
     public Player(String s) {
         name = s;
-        piecesAliveNum = 8;
+        piecesAliveNum = 9;
         piecesDeadNum = 0;
-        piecesAlive = new Piece[8];
-        piecesDead = new Piece[8];
+        piecesAlive = new Piece[9];
+        piecesDead = new Piece[9];
 
         if (s.equals("white")) {
             piecesAlive[0] = new Giant("white", 2, 1);
@@ -22,6 +22,7 @@ public class Player {
             piecesAlive[5] = new Squire("white", 3, 2);
             piecesAlive[6] = new Knight("white", 4, 2);
             piecesAlive[7] = new Squire("white", 5, 2);
+            piecesAlive[8] = new Castle("white", 6, 1);
         } else {
             piecesAlive[0] = new Giant("black", 5, 6);
             piecesAlive[1] = new Dragon("black", 4, 6);
@@ -31,14 +32,15 @@ public class Player {
             piecesAlive[5] = new Squire("black", 4, 5);
             piecesAlive[6] = new Knight("black", 3, 5);
             piecesAlive[7] = new Squire("black", 2, 5);
+            piecesAlive[8] = new Castle("black", 1, 6);
         }
     }
 
     public void readPlayer(){
         piecesAliveNum = 0;
         piecesDeadNum = 0;
-        piecesAlive = new Piece[8];
-        piecesDead = new Piece[8];
+        piecesAlive = new Piece[9];
+        piecesDead = new Piece[9];
     }
 
     public void addPiece(Piece p){
@@ -74,8 +76,16 @@ public class Player {
         return piecesDead;
     }
 
+
+
     public Piece choosePieceAlive(int x, int y) {
         Piece p = new Piece();
+        for (int i = 0; i < piecesAliveNum; i++) {
+            if (piecesAlive[i].getType().equals("Castle")&&x == piecesAlive[i].getPositionX() && y == piecesAlive[i].getPositionY()){
+                p = piecesAlive[i];
+                return p;
+            }
+        }
         for (int i = 0; i < piecesAliveNum; i++) {
             if (x == piecesAlive[i].getPositionX() && y == piecesAlive[i].getPositionY())
                 p = piecesAlive[i];

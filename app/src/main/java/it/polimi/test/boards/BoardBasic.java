@@ -16,12 +16,12 @@ public class BoardBasic {
         turnsNum = 1;
         color = "white";
 
-        boardState[0]="000000".toCharArray();
+        boardState[0]="00000c".toCharArray();
         boardState[1]="GK00sa".toCharArray();
         boardState[2]="DS00km".toCharArray();
         boardState[3]="MK00sd".toCharArray();
         boardState[4]="AS00kg".toCharArray();
-        boardState[5]="000000".toCharArray();
+        boardState[5]="C00000".toCharArray();
 
         for(int i = 0; i<6;i++)
             for(int j = 0 ; j <6; j++)
@@ -31,7 +31,7 @@ public class BoardBasic {
         boardCells[5][2]='s';
         boardCells[5][5]='s';
 
-        vitalities="5675434334345765";
+        vitalities="567584343343485765";
         frozenPieces="000000";
         unusedSpells="FHRTFHRT";
 
@@ -104,9 +104,11 @@ public class BoardBasic {
         for (int i = 0; i <= 5; i++) {
             for (int j = 0; j <= 5; j++) {
                 if ((boardState[i][j] >= 97) && (boardState[i][j] <= 122)) {
-                    boardStateInt[i][j] = -1;
+                    if(boardState[i][j]=='c')boardStateInt[i][j]=1;
+                    else boardStateInt[i][j] = -1;
                 } else if ((boardState[i][j] >= 65) && (boardState[i][j] <= 90)) {
-                    boardStateInt[i][j] = 1;
+                    if(boardState[i][j]=='C')boardStateInt[i][j]=-1;
+                    else boardStateInt[i][j] = 1;
                 } else {
                     boardStateInt[i][j] = 0;
                 }
@@ -461,8 +463,11 @@ public class BoardBasic {
             return false;
         }
         else if ((color.equals("white")&&boardState[x-1][y-1]!='0'&&boardState[x-1][y-1]<'Z')||(color.equals("black")&&boardState[x-1][y-1]>'Z')){
-            System.out.println("You can not teleport your piece onto your own piece!");
-            return false;
+            if((color.equals("white")&&boardState[x-1][y-1]=='C')||(color.equals("black")&&boardState[x-1][y-1]=='c'))return m.teleport(p,x,y);
+            else {
+                System.out.println("You can not teleport your piece onto your own piece!");
+                return false;
+            }
         }
         else if((color.equals("white")&&boardState[x-1][y-1]=='m')||(color.equals("black")&&boardState[x-1][y-1]=='M')){
             System.out.println("You can not teleport your piece to opponent's mage!");
@@ -530,13 +535,17 @@ public class BoardBasic {
                 boardV[i][j]=0;
             }
         for(int i = 0; i < white.getPiecesAliveNum();i++){
-            boardState[white.getPiecesAlive()[i].getPositionX()-1][white.getPiecesAlive()[i].getPositionY()-1]=white.getPiecesAlive()[i].getType().charAt(0);
-            boardV[white.getPiecesAlive()[i].getPositionX()-1][white.getPiecesAlive()[i].getPositionY()-1]=white.getPiecesAlive()[i].getVitality();
+            if(boardState[white.getPiecesAlive()[i].getPositionX()-1][white.getPiecesAlive()[i].getPositionY()-1]!='C') {
+                boardState[white.getPiecesAlive()[i].getPositionX() - 1][white.getPiecesAlive()[i].getPositionY() - 1] = white.getPiecesAlive()[i].getType().charAt(0);
+                boardV[white.getPiecesAlive()[i].getPositionX() - 1][white.getPiecesAlive()[i].getPositionY() - 1] = white.getPiecesAlive()[i].getVitality();
+            }
             if(white.getPiecesAlive()[i].getState()=='f') p1Frozen=white.getPiecesAlive()[i];
         }
         for(int i = 0; i < black.getPiecesAliveNum();i++){
-            boardState[black.getPiecesAlive()[i].getPositionX()-1][black.getPiecesAlive()[i].getPositionY()-1]=black.getPiecesAlive()[i].getType().toLowerCase().charAt(0);
-            boardV[black.getPiecesAlive()[i].getPositionX()-1][black.getPiecesAlive()[i].getPositionY()-1]=black.getPiecesAlive()[i].getVitality();
+            if(boardState[white.getPiecesAlive()[i].getPositionX()-1][white.getPiecesAlive()[i].getPositionY()-1]!='c') {
+                boardState[black.getPiecesAlive()[i].getPositionX() - 1][black.getPiecesAlive()[i].getPositionY() - 1] = black.getPiecesAlive()[i].getType().toLowerCase().charAt(0);
+                boardV[black.getPiecesAlive()[i].getPositionX() - 1][black.getPiecesAlive()[i].getPositionY() - 1] = black.getPiecesAlive()[i].getVitality();
+            }
             if(black.getPiecesAlive()[i].getState()=='f') p2Frozen=black.getPiecesAlive()[i];
         }
         for(int i=0;i<6;i++)

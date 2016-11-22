@@ -7,6 +7,7 @@ package it.polimi.test.pieces;
 public class Piece {
     public Piece(){
         pieceEnable = false;
+        type = "00000";
     }
     public Piece(int iV, int mR, char mD, char mT, int aR, int aS, char aD, String c, int x, int y, String t) {
         state = 'n';
@@ -67,6 +68,10 @@ public class Piece {
         return color;
     }
 
+    public int getInitialVitality(){
+        return initialVitality;
+    }
+
     public int getVitality(){
         return vitality;
     }
@@ -111,6 +116,11 @@ public class Piece {
         return attackDirections;
     }
 
+
+    public void setInitialVitality(int iV){
+        initialVitality=iV;
+    }
+
     public void setState(char c) {
         state = c;
     }
@@ -119,6 +129,29 @@ public class Piece {
         vitality = v;
     }
 
+    public void setMoveRange(int mR){
+        moveRange=mR;
+    }
+
+    public void setMoveDirections(char mD){
+        moveDirections=mD;
+    }
+
+    public void setMoveType(char mT){
+        moveType=mT;
+    }
+
+    public void setAttackRange(int aR){
+        attackRange=aR;
+    }
+
+    public void setAttackStrength(int aS){
+        attackStrength=aS;
+    }
+
+    public void setAttackDirections(char aD){
+        attackDirections=aD;
+    }
 
 
     public boolean attack(Piece p){
@@ -128,6 +161,14 @@ public class Piece {
     public void moveTo(int x, int y) {
         positionX = x;
         positionY = y;
+    }
+
+    public boolean station(Castle p){
+        if(p.getGarrison().getPieceEnable())return false;
+        else {
+            p.stationed(this);
+            return true;
+        }
     }
 
     public boolean attacked(int damage) {
