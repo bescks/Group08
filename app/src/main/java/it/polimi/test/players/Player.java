@@ -34,6 +34,24 @@ public class Player {
         }
     }
 
+    public void readPlayer(){
+        piecesAliveNum = 0;
+        piecesDeadNum = 0;
+        piecesAlive = new Piece[8];
+        piecesDead = new Piece[8];
+    }
+
+    public void addPiece(Piece p){
+        if(p.getState()=='d'){
+            piecesDead[piecesDeadNum]=p;
+            piecesDeadNum++;
+        }
+        else {
+            piecesAlive[piecesAliveNum]=p;
+            piecesAliveNum++;
+        }
+    }
+
     String name;
     private int piecesAliveNum;
     private int piecesDeadNum;
@@ -46,6 +64,14 @@ public class Player {
 
     public Piece[] getPiecesAlive(){
         return piecesAlive;
+    }
+
+    public int getPiecesDeadNum(){
+        return piecesDeadNum;
+    }
+
+    public Piece[] getPiecesDead(){
+        return piecesDead;
     }
 
     public Piece choosePieceAlive(int x, int y) {

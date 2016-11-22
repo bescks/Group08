@@ -38,6 +38,13 @@ public class Mage extends Piece {
         return spellsUnused;
     }
 
+    public void setSpellsUnused(String s){
+        if(s.charAt(0)=='0')freezeEnable=false;
+        if(s.charAt(1)=='0')healEnable=false;
+        if(s.charAt(2)=='0')reviveEnable=false;
+        if(s.charAt(3)=='0')teleportEnable=false;
+    }
+
     public boolean chooseActions(char a) {
         return (a == 'M'||a=='F'||a=='H'||a=='R'||a=='T');
     }

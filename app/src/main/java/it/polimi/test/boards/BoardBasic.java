@@ -50,13 +50,47 @@ public class BoardBasic {
     private Piece p1Frozen = new Piece();
     private Piece p2Frozen = new Piece();
 
-    public  String getColor(){
+    public int getTurnsNum(){
+        return turnsNum;
+    }
+
+    public String getColor(){
         return color;
     }
 
     public char[][] getBoardState(){
         return boardState;
     }
+
+    public int getTimer1(){
+        return timer1;
+    }
+
+    public int getTimer2(){
+        return timer2;
+    }
+
+    public String getUnusedSpells(){
+        return unusedSpells;
+    }
+
+    public void setTurnsNum(int i){
+        turnsNum = i;
+    }
+
+    public void setColor(String s){
+        color = s;
+    }
+
+    public void setTimer1(int i){
+        timer1 = i;
+    }
+
+    public void setTimer2(int i){
+        timer2 = i;
+    }
+
+
 
 
 
@@ -498,18 +532,20 @@ public class BoardBasic {
         for(int i = 0; i < white.getPiecesAliveNum();i++){
             boardState[white.getPiecesAlive()[i].getPositionX()-1][white.getPiecesAlive()[i].getPositionY()-1]=white.getPiecesAlive()[i].getType().charAt(0);
             boardV[white.getPiecesAlive()[i].getPositionX()-1][white.getPiecesAlive()[i].getPositionY()-1]=white.getPiecesAlive()[i].getVitality();
+            if(white.getPiecesAlive()[i].getState()=='f') p1Frozen=white.getPiecesAlive()[i];
         }
         for(int i = 0; i < black.getPiecesAliveNum();i++){
             boardState[black.getPiecesAlive()[i].getPositionX()-1][black.getPiecesAlive()[i].getPositionY()-1]=black.getPiecesAlive()[i].getType().toLowerCase().charAt(0);
             boardV[black.getPiecesAlive()[i].getPositionX()-1][black.getPiecesAlive()[i].getPositionY()-1]=black.getPiecesAlive()[i].getVitality();
+            if(black.getPiecesAlive()[i].getState()=='f') p2Frozen=black.getPiecesAlive()[i];
         }
         for(int i=0;i<6;i++)
             for(int j=0;j<6;j++){
                 if(boardState[j][i]!='0')vitalities=vitalities + boardV[j][i];
             }
-        if(p1Frozen.getPieceEnable())frozenPieces="" + p1Frozen.getPositionX() + p1Frozen.getPositionY() + timer1;
+        if(timer1!=0)frozenPieces="" + p1Frozen.getPositionX() + p1Frozen.getPositionY() + timer1;
         else frozenPieces="000";
-        if(p2Frozen.getPieceEnable())frozenPieces=frozenPieces + p2Frozen.getPositionX() + p2Frozen.getPositionY() + timer2;
+        if(timer2!=0)frozenPieces=frozenPieces + p2Frozen.getPositionX() + p2Frozen.getPositionY() + timer2;
         else frozenPieces=frozenPieces+"000";
         Mage m1 = white.chooseMage();
         Mage m2 = black.chooseMage();

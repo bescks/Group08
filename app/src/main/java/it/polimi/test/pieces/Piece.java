@@ -67,8 +67,6 @@ public class Piece {
         return color;
     }
 
-
-
     public int getVitality(){
         return vitality;
     }
@@ -88,8 +86,6 @@ public class Piece {
     public int getInitialPositionY() {
         return initialPositionY;
     }
-
-
 
     public int getMoveRange(){
         return moveRange;
@@ -113,6 +109,14 @@ public class Piece {
 
     public char getAttackDirections(){
         return attackDirections;
+    }
+
+    public void setState(char c) {
+        state = c;
+    }
+
+    public void setVitality(int v){
+        vitality = v;
     }
 
 
@@ -163,6 +167,7 @@ public class Piece {
     public int inCombatWith(Piece op) {
         boolean self = false;
         boolean opponent = false;
+        if(this.state=='f'&&op.getState()=='f')return 3;
         while ((!self) && (!opponent)) {
             if(op.getState()=='n')self=this.attacked(op.getAttackStrength());
             if(state=='n')opponent=op.attacked(attackStrength);

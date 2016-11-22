@@ -2,16 +2,206 @@ package it.polimi.test;
 import it.polimi.test.boards.*;
 import it.polimi.test.pieces.*;
 import it.polimi.test.players.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+
 import java.util.Scanner;
 /**
  * Created by lucio on 11/21/2016.
  */
 
 public class Test {
+    public static void saveGame(String fileName,Player white, Player black,BoardBasic board){
+        String filePath="C:\\Users\\lucio\\Desktop\\Test\\save\\"+ fileName + ".txt";
+        int i=0;
+        int tNum = board.getTurnsNum();
+        String turnsNum="";
+        try{
+            FileWriter fw = new FileWriter(filePath);
+            while(tNum!=0){
+                turnsNum = turnsNum + (tNum%10);
+                tNum=tNum/10;
+            }
+            fw.write(turnsNum);
+            fw.write("\r\n"+board.getColor());
+            fw.write("\r\n"+board.getTimer1());
+            fw.write("\r\n"+board.getTimer2());
+            fw.write("\r\n"+board.getUnusedSpells());
+            for(i=0;i<white.getPiecesAliveNum();i++){
+                fw.write("\r\n"+white.getPiecesAlive()[i].getType());
+                fw.write("\r\n"+white.getPiecesAlive()[i].getState());
+                fw.write("\r\n"+white.getPiecesAlive()[i].getVitality());
+                fw.write("\r\n"+white.getPiecesAlive()[i].getPositionX());
+                fw.write("\r\n"+white.getPiecesAlive()[i].getPositionY());
+            }
+            for(i=0;i<white.getPiecesDeadNum();i++){
+                fw.write("\r\n"+white.getPiecesDead()[i].getType());
+                fw.write("\r\n"+white.getPiecesDead()[i].getState());
+                fw.write("\r\n"+white.getPiecesDead()[i].getVitality());
+                fw.write("\r\n"+white.getPiecesDead()[i].getPositionX());
+                fw.write("\r\n"+white.getPiecesDead()[i].getPositionY());
+            }
+            for(i=0;i<black.getPiecesAliveNum();i++){
+                fw.write("\r\n"+black.getPiecesAlive()[i].getType());
+                fw.write("\r\n"+black.getPiecesAlive()[i].getState());
+                fw.write("\r\n"+black.getPiecesAlive()[i].getVitality());
+                fw.write("\r\n"+black.getPiecesAlive()[i].getPositionX());
+                fw.write("\r\n"+black.getPiecesAlive()[i].getPositionY());
+            }
+            for(i=0;i<black.getPiecesDeadNum();i++){
+                fw.write("\r\n"+black.getPiecesDead()[i].getType());
+                fw.write("\r\n"+black.getPiecesDead()[i].getState());
+                fw.write("\r\n"+black.getPiecesDead()[i].getVitality());
+                fw.write("\r\n"+black.getPiecesDead()[i].getPositionX());
+                fw.write("\r\n"+black.getPiecesDead()[i].getPositionY());
+            }
+            fw.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void readGame(String fileName,BoardBasic board,Player white,Player black) {
+        String filePath = "C:\\Users\\lucio\\Desktop\\Test\\save\\" + fileName + ".txt";
+        String type;
+        char state;
+        int vitality;
+        int x;
+        int y;
+        int turnNum=0;
+        File file = new File(filePath);
+        try {
+            Scanner sc = new Scanner(file);
+            String s = "";
+            String unusedSpellWhite;
+            String unusedSpellBlack;
+
+            s=sc.next();
+            for(int i=0;i<s.length();i++)turnNum=turnNum*10+s.charAt(i)-48;
+            board.setTurnsNum(turnNum);
+
+            sc.nextLine();
+            s=sc.nextLine();
+            board.setColor(s);
+
+            s=sc.nextLine();
+            board.setTimer1(s.charAt(0)-48);
+            s=sc.nextLine();
+            board.setTimer2(s.charAt(0)-48);
+
+            s=sc.nextLine();
+            unusedSpellWhite=s.substring(0,4);
+            unusedSpellBlack=s.substring(4,8);
+
+            white.readPlayer();
+            black.readPlayer();
+
+            for(int i=0;i<8;i++){
+                s=sc.nextLine();
+                type = s;
+                state =sc.nextLine().charAt(0);
+                vitality = sc.nextLine().charAt(0)-48;
+                x = sc.nextLine().charAt(0)-48;
+                y = sc.nextLine().charAt(0)-48;
+                if(type.equals("Archer")){
+                    Piece p = new Archer("white",x,y);
+                    p.setState(state);
+                    p.setVitality(vitality);
+                    white.addPiece(p);
+                }
+                else if(type.equals("Dragon")){
+                    Piece p = new Dragon("white",x,y);
+                    p.setState(state);
+                    p.setVitality(vitality);
+                    white.addPiece(p);
+                }
+                else if(type.equals("Giant")){
+                    Piece p = new Giant("white",x,y);
+                    p.setState(state);
+                    p.setVitality(vitality);
+                    white.addPiece(p);
+                }
+                else if(type.equals("Knight")){
+                    Piece p = new Knight("white",x,y);
+                    p.setState(state);
+                    p.setVitality(vitality);
+                    white.addPiece(p);
+                }
+                else if(type.equals("Squire")){
+                    Piece p = new Squire("white",x,y);
+                    p.setState(state);
+                    p.setVitality(vitality);
+                    white.addPiece(p);
+                }
+                else if(type.equals("Mage")){
+                    Mage p = new Mage("white",x,y);
+                    p.setSpellsUnused(unusedSpellWhite);
+                    p.setState(state);
+                    p.setVitality(vitality);
+                    white.addPiece(p);
+                }
+            }
+            for(int i=0;i<8;i++){
+                s=sc.nextLine();
+                type = s;
+                state =sc.nextLine().charAt(0);
+                vitality = sc.nextLine().charAt(0)-48;
+                x = sc.nextLine().charAt(0)-48;
+                y = sc.nextLine().charAt(0)-48;
+                if(type.equals("Archer")){
+                    Piece p = new Archer("black",x,y);
+                    p.setState(state);
+                    p.setVitality(vitality);
+                    black.addPiece(p);
+                }
+                else if(type.equals("Dragon")){
+                    Piece p = new Dragon("black",x,y);
+                    p.setState(state);
+                    p.setVitality(vitality);
+                    black.addPiece(p);
+                }
+                else if(type.equals("Giant")){
+                    Piece p = new Giant("black",x,y);
+                    p.setState(state);
+                    p.setVitality(vitality);
+                    black.addPiece(p);
+                }
+                else if(type.equals("Knight")){
+                    Piece p = new Knight("black",x,y);
+                    p.setState(state);
+                    p.setVitality(vitality);
+                    black.addPiece(p);
+                }
+                else if(type.equals("Squire")){
+                    Piece p = new Squire("black",x,y);
+                    p.setState(state);
+                    p.setVitality(vitality);
+                    black.addPiece(p);
+                }
+                else if(type.equals("Mage")){
+                    Mage p = new Mage("black",x,y);
+                    p.setSpellsUnused(unusedSpellBlack);
+                    p.setState(state);
+                    p.setVitality(vitality);
+                    black.addPiece(p);
+                }
+            }
+        }catch (FileNotFoundException e){
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String [] args) {
         Player white = new Player("white");
         Player black = new Player("black");
         BoardBasic board = new BoardBasic();
+
+        if(true){
+            readGame("testGame1",board,white,black);
+            board.refreshBoard(white,black);
+        }
 
         String action;
         char act;
@@ -124,10 +314,8 @@ public class Test {
                             m=black.chooseMage();
                             p2=black.choosePieceDead(x1,y1);
                             ctrl = !board.excuteRevive(m,p2);
-                            if(!ctrl)white.pieceRevived(p2);
+                            if(!ctrl)black.pieceRevived(p2);
                         }
-
-
                     }
                     break;
                     case 'T': {
@@ -155,6 +343,11 @@ public class Test {
                                 white.pieceDie(p2);
                             }
                         }
+                    }
+                    break;
+                    case 'S':{
+                        saveGame("testGame1",white,black,board);
+                        ctrl = true;
                     }
                     break;
                     default: {
