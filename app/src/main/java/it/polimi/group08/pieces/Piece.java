@@ -1,25 +1,44 @@
 package it.polimi.group08.pieces;
 
 /**
- * Created by lucio on 11/21/2016.
- * This class is used to express a standard piece, its attributes and its methods.
+ * Created by gengdongjie on 28/12/2016.
  */
 
 public class Piece {
-    public Piece(){
-        pieceEnable = false;
-        type = "00000";
-    }
-    public Piece(int iV, int mR, char mD, char mT, int aR, int aS, char aD, String c, int x, int y, String t) {
-        state = 'n';
-        color = c;
+
+    String type = "0";
+    private int typeInt = 0;
+    public String state = "d";
+    private int initialVitality = 0;
+    public int vitality = 0;
+    private int moveRange = 0;
+    private String moveDirections = "";
+    private String moveType = "";
+    private int attackRange = 0;
+    private int attackStrength = 0;
+    private String attackDirections = "";
+    int initPositionX = 0;
+    int initPositionY = 0;
+    int twinPositionX = 0;
+    int twinPositionY = 0;
+    int twinPlayerY = 0;
+    private int playerX = 0;
+    int playerY = 0;
+    boolean twinIndex = false;
+    public String spells = "";
+
+    public Piece(int iV, int mR, String mD, String mT, int aR, int aS, String aD, String c, String t) {
+
+        if (c.equals("white")) {
+            playerX = 0;
+            typeInt = 1;
+        } else {
+            playerX = 1;
+            typeInt = -1;
+        }
 
         initialVitality = iV;
         vitality = iV;
-        initialPositionX = x;
-        initialPositionY = y;
-        positionX = x;
-        positionY = y;
 
         moveRange = mR;
         moveDirections = mD;
@@ -27,13 +46,15 @@ public class Piece {
         attackRange = aR;
         attackStrength = aS;
         attackDirections = aD;
-
         type = t;
-        pieceEnable = true;
+    }
+
+    public Piece() {
+
     }
 
     /**
-     *  type is to indicate which type of pieces the object is, it can be Archer, Dragon, Giant, Knight, Mage, Squire and Castle(extended)
+     * type is to indicate which type of pieces the object is, it can be Archer, Dragon, Giant, Knight, Mage, Squire and Castle(extended)
      * pieceEnable is to indicate this piece is exist(True) or not(False)
      * state is to indicate the piece is normal(n), frozen(f) or dead(d)
      * color is to indicate the piece is belonging to white or black
@@ -42,209 +63,80 @@ public class Piece {
      * other attributes are designed as the requirements
      */
 
-    private String type;
-    private boolean pieceEnable;
-    private char state;
-    private String color;
-
-    private int initialVitality;
-    private int vitality;
-    private int initialPositionX;
-    private int initialPositionY;
-    private int positionX;
-    private int positionY;
-
-    private int moveRange;
-    private char moveDirections;
-    private char moveType;
-    private int attackRange;
-    private int attackStrength;
-    private char attackDirections;
-
     /**
      * From here, following are the basic methods to return and set all the attributes
      */
 
-    public String getType(){
+    public String getType() {
         return type;
     }
 
-    public boolean getPieceEnable(){
-        return pieceEnable;
+    public int getTypeInt() {
+        return typeInt;
     }
 
-    public char getState() {
-        return state;
+    public void setInitVitality() {
+        vitality = initialVitality;
     }
 
-    public String getColor() {
-        return color;
+    public int getInitPositionX() {
+        return initPositionX;
     }
 
-    public int getInitialVitality(){
-        return initialVitality;
+    public int getInitPositionY() {
+        return initPositionY;
     }
 
-    public int getVitality(){
-        return vitality;
+    public int getPlayerX() {
+        return playerX;
     }
 
-    public int getPositionX() {
-        return positionX;
+    public int getPlayerY() {
+        return playerY;
     }
 
-    public int getPositionY() {
-        return positionY;
+    public boolean isTwin() {
+        return twinIndex;
     }
 
-    public int getInitialPositionX() {
-        return initialPositionX;
+    public int getTwinX() {
+        return twinPositionX;
     }
 
-    public int getInitialPositionY() {
-        return initialPositionY;
+    public int getTwinY() {
+
+        return twinPositionY;
     }
 
-    public int getMoveRange(){
+    public int getTwinPlayerY()
+
+    {
+        return twinPlayerY;
+    }
+
+    public int getMoveRange() {
         return moveRange;
     }
 
-    public char getMoveDirections(){
+    public String getMoveDirections() {
         return moveDirections;
     }
 
-    public char getMoveType(){
+    public String getMoveType() {
         return moveType;
     }
 
-    public int getAttackRange(){
-        return  attackRange;
+    public int getAttackRange() {
+        return attackRange;
     }
 
-    public int getAttackStrength(){
+    public int getAttackStrength() {
         return attackStrength;
     }
 
-    public char getAttackDirections(){
+    public String getAttackDirections() {
         return attackDirections;
     }
 
-
-    public void setInitialVitality(int iV){
-        initialVitality=iV;
-    }
-
-    public void setState(char c) {
-        state = c;
-    }
-
-    public void setVitality(int v){
-        vitality = v;
-    }
-
-    public void setMoveRange(int mR){
-        moveRange=mR;
-    }
-
-    public void setMoveDirections(char mD){
-        moveDirections=mD;
-    }
-
-    public void setMoveType(char mT){
-        moveType=mT;
-    }
-
-    public void setAttackRange(int aR){
-        attackRange=aR;
-    }
-
-    public void setAttackStrength(int aS){
-        attackStrength=aS;
-    }
-
-    public void setAttackDirections(char aD){
-        attackDirections=aD;
-    }
-
-
-
-    /**
-     * attack is useless, but need to be overridden by child class. Because some pieces like mage and squire can not attack
-     * moveTo is to move a piece to (x,y), all the methods in class piece are just actions, ability judgement methods are in package board
-     * station is an addition method for new piece Castle
-     * attacked, frozen, unfrozen, healed, revived, teleported are the passive methods, they are also just passive actions, the active actions are in correspond child classes
-     * inCombatWith is used as A.inCombatWith(B), use the return value to indicate result 3(all died), 1(A died), 2(B died), it is only action, judgement is not included
-     * chooseAction is reserved for view design
-     */
-
-    public boolean attack(Piece p){
-        return false;
-    }
-
-    public void moveTo(int x, int y) {
-        positionX = x;
-        positionY = y;
-    }
-
-    public boolean station(Castle p){
-        if(p.getGarrison().getPieceEnable())return false;
-        else {
-            p.stationed(this);
-            return true;
-        }
-    }
-
-    public boolean attacked(int damage) {
-        vitality = vitality - damage;
-        if (vitality <= 0){
-            vitality = 0;
-            state = 'd';
-            return true;
-        }
-        else return false;
-    }
-
-    public void frozen() {
-        state = 'f';
-    }
-
-    public void unFrozen() {
-        state = 'n';
-    }
-
-    public void healed() {
-        vitality = initialVitality;
-    }
-
-    public void revived(int x, int y) {
-        vitality = initialVitality;
-        positionX=x;
-        positionY=y;
-        state = 'n';
-    }
-
-    public void teleported(int x, int y) {
-        positionX=x;
-        positionY=y;
-    }
-
-    public int inCombatWith(Piece op) {
-        boolean self = false;
-        boolean opponent = false;
-        if(this.state=='f'&&op.getState()=='f')return 3;
-        else if(state=='f') return 1;
-        else if(op.getState()=='f')return 2;
-        while ((!self) && (!opponent)) {
-            self = this.attacked(op.getAttackStrength());
-            opponent = op.attacked(attackStrength);
-        }
-        if(self && opponent) return 3;
-        else if(self) return 1;
-        else return 2;
-    }
-
-    public boolean chooseActions(char a) {
-        return (a=='M');
-    }
 
 }

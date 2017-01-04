@@ -1,21 +1,28 @@
 package it.polimi.group08.pieces;
 
 /**
- * Created by lucio on 11/21/2016.
- * Dragon can attack, so the method attack in piece is overridden
- * chooseAction is reserved for view design
+ * Created by gengdongjie on 28/12/2016.
  */
 
 public class Dragon extends Piece {
-    public Dragon(String c, int x, int y) {
-        super(6, 3, 's', 'f', 2, 3, 's', c, x, y,"Dragon");
-    }
 
-    public boolean chooseActions(char a) {
-        return (a == 'A' || a == 'M');
-    }
+    public Dragon(String c) {
+        super(6, 3, "+", "flight", 2, 3, "+", c, "0");
+        super.playerY = 1;
+        switch (c) {
+            case "white":
+                super.type = "D";
+                super.initPositionX = 0;
+                super.initPositionX = 2;
+                break;
+            case "black":
+                super.type = "d";
+                super.initPositionX = 5;
+                super.initPositionX = 3;
+                break;
+            default:
+                System.out.println("ERROR:<Invalid color for piece dragon!>");
+        }
 
-    public boolean attack(Piece p){
-        return p.attacked(super.getAttackStrength());
     }
 }

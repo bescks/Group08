@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Group08</string>
+    <string name="contentDescription">Background</string>
+    <string name="emptyPiece">emptyPiece</string>
+    <string name="Piece">Piece</string>
+    <string name="Cell">Cell</string>
 </resources>

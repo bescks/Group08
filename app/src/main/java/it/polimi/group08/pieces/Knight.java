@@ -1,21 +1,46 @@
 package it.polimi.group08.pieces;
 
 /**
- * Created by lucio on 11/21/2016.
- * Knight can attack, so the method attack in piece is overridden
- * chooseAction is reserved for view design
+ * Created by gengdongjie on 28/12/2016.
  */
-
 public class Knight extends Piece {
-    public Knight(String c, int x, int y) {
-        super(4, 1, 'a', 'w', 1, 2, 'd', c, x, y,"Knight");
-    }
 
-    public boolean chooseActions(char a) {
-        return (a == 'A' || a == 'M');
-    }
+    public Knight(String c, int x1, int y1, int x2, int y2) {
 
-    public boolean attack(Piece p){
-        return p.attacked(super.getAttackStrength());
+        super(4, 1, "*", "walk", 1, 2, "x", c, "0");
+        super.twinIndex = true;
+        super.initPositionX = x1;
+        super.initPositionY = y1;
+        super.twinPositionX = x2;
+        super.twinPositionY = y2;
+
+        switch (c) {
+            case "white": {
+                if (y1 == 1) {
+                    super.playerY = 4;
+                    super.twinPlayerY = 6;
+                }
+                if (y1 == 3) {
+                    super.playerY = 6;
+                    super.twinPlayerY = 4;
+                }
+                super.type = "K";
+                break;
+            }
+
+            case "black": {
+                if (y1 == 4) {
+                    super.playerY = 4;
+                    super.twinPlayerY = 6;
+                }
+                if (y1 == 2) {
+                    super.playerY = 6;
+                    super.twinPlayerY = 4;
+                }
+                super.type = "k";
+                break;
+            }
+        }
     }
 }
+
