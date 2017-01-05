@@ -1,16 +1,28 @@
 package it.polimi.group08;
 
 
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatImageView;
 import android.view.View;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-public class GameActivity extends AppCompatActivity {
+import java.util.Set;
+import java.util.TreeSet;
 
+import it.polimi.group08.boards.Chessboard;
+
+import static it.polimi.group08.R.drawable.cell;
+
+public class GameActivity extends AppCompatActivity {
+    Chessboard chessboard = new Chessboard();
     GridLayout gl_cellBackground;
     GridLayout gl_pieceBoard;
+
     GridLayout gl_cellBoard;
     RelativeLayout secondLayer;
 
@@ -18,68 +30,128 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        MyApplication app = ((MyApplication) getApplicationContext());
+        ColorMatrix cm = new ColorMatrix();
+        cm.setSaturation(0);
+        AppCompatImageView iv_move_white = new AppCompatImageView(getBaseContext());
+        iv_move_white.setColorFilter(new ColorMatrixColorFilter(cm));
+
+//      initialize chessboard
+        chessboard.initBoard();
 //      firstLayer : initialize cellBackground
         gl_cellBackground = (GridLayout) findViewById(R.id.gl_cellBackground);
-        gl_cellBackground.getLayoutParams().height = app.width;
-        for (int i = 0; i < 36; i++) {
-            View child = gl_cellBackground.getChildAt(i);
-            child.getLayoutParams().width = app.width / 6;
-            child.getLayoutParams().height = app.width / 6;
-        }
+        initCellBackground();
 //      secondlayer :initialization
         secondLayer = (RelativeLayout) findViewById(R.id.rl_secondLayer);
         gl_pieceBoard = (GridLayout) findViewById(R.id.gl_pieceBoard);
-        gl_pieceBoard.getLayoutParams().height = app.width;
+        gl_pieceBoard.getLayoutParams().height = 1080;
         for (int i = 0; i < gl_pieceBoard.getChildCount(); i++) {
             View child = gl_pieceBoard.getChildAt(i);
-            child.getLayoutParams().width = app.width / 6;
-            child.getLayoutParams().height = app.width / 6;
+            child.getLayoutParams().width = 180;
+            child.getLayoutParams().height = 180;
         }
 //        initializing 2nd GridLayout
 
 //      thirdlayer layer: initialize cellBoard
         gl_cellBoard = (GridLayout) findViewById(R.id.gl_cellBoard);
-        gl_cellBoard.getLayoutParams().height = app.width;
-        for (int i = 0; i < gl_cellBoard.getChildCount(); i++) {
-            View child = gl_cellBoard.getChildAt(i);
-            child.getLayoutParams().width = app.width / 6;
-            child.getLayoutParams().height = app.width / 6;
+        initCellBoard();
+
+
+    }
+
+
+    public void initCellBackground() {
+
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                GridLayout.LayoutParams cellBackground_Param = new GridLayout.LayoutParams();
+                AppCompatImageView child = new AppCompatImageView(this);
+                cellBackground_Param.width = 180;
+                cellBackground_Param.height = 180;
+                cellBackground_Param.columnSpec = GridLayout.spec(j, 1);
+                cellBackground_Param.rowSpec = GridLayout.spec(i, 1);
+                String tag = "bg_cell" + j + i;
+                child.setTag(tag);
+                child.setImageResource(cell);
+                child.setScaleType(ImageView.ScaleType.FIT_XY);
+                child.setLayoutParams(cellBackground_Param);
+                gl_cellBackground.addView(child);
+            }
         }
-
     }
 
-    public void cellIsSelected(View view) {
-        GridLayout.LayoutParams param = new GridLayout.LayoutParams();
-        System.out.println(view.getTag());
-
+    public void initCellBoard() {
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                GridLayout.LayoutParams cellBoard_Param = new GridLayout.LayoutParams();
+                AppCompatImageView child = new AppCompatImageView(getBaseContext());
+                cellBoard_Param.width = 180;
+                cellBoard_Param.height = 180;
+                cellBoard_Param.columnSpec = GridLayout.spec(j, 1);
+                cellBoard_Param.rowSpec = GridLayout.spec(i, 1);
+                String tag = "cell" + i + j;
+                child.setTag(tag);
+                child.setClickable(true);
+                child.setOnClickListener(cellOnClick);
+                child.setLayoutParams(cellBoard_Param);
+                gl_cellBoard.addView(child);
+            }
+        }
     }
 
+    private View.OnClickListener cellOnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View cell) {
+            System.out.println(gl_pieceBoard.getChildCount());
+            if (gl_pieceBoard.getChildCount() > 36) {
+                gl_pieceBoard.removeViews(36, gl_pieceBoard.getChildCount() - 36);
+            }
+            int cellX = 5 - Integer.parseInt(cell.getTag().toString().substring(4, 5));
+            int cellY = Integer.parseInt(cell.getTag().toString().substring(5, 6));
+            Set moveSet = new TreeSet();
+            if (chessboard.boardPiece[cellX][cellY].getTypeInt() != 0) {
+                moveSet = chessboard.getMoveCells(cellX, cellY);
+                for (Object moveCell : moveSet) {
+                    int moveCellX = Integer.parseInt(moveCell.toString().substring(0, 1));
+                    int moveCellY = Integer.parseInt((moveCell.toString().substring(1, 2)));
+                    GridLayout.LayoutParams cellBoard_Param = new GridLayout.LayoutParams();
+                    AppCompatImageView target = new AppCompatImageView(getBaseContext());
+                    cellBoard_Param.width = 180;
+                    cellBoard_Param.height = 180;
+                    cellBoard_Param.columnSpec = GridLayout.spec(moveCellY, 1, 1f);
+                    cellBoard_Param.rowSpec = GridLayout.spec(5 - moveCellX, 1, 1f);
+                    target.setContentDescription("target");
+                    target.setPadding(30, 30, 30, 30);
+                    target.setTag("targetCell");
+                    target.setImageResource(R.drawable.piece_target);
+                    target.setLayoutParams(cellBoard_Param);
+                    gl_pieceBoard.addView(target);
+                }
+            }
 
-//        initializing first RelativeLayout
-//        RelativeLayout rL2 = (RelativeLayout) findViewById(rl_game_2ndLayer);
-//        RelativeLayout.LayoutParams RL2_Params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-//        RL2_Params.setMargins(0, 200, 0, 500);
-//        rL2.setLayoutParams(RL2_Params);
-//        LinearLayout RL1LL1 = (LinearLayout) findViewById(R.id.RL1LL1);
-//        LinearLayout RL1LL2 = (LinearLayout) findViewById(R.id.RL1LL2);
-//        LinearLayout RL1LL3 = (LinearLayout) findViewById(R.id.RL1LL3);
-//        LinearLayout.LayoutParams RL1LL1Params = (LinearLayout.LayoutParams) RL1LL1.getLayoutParams();
-//        LinearLayout.LayoutParams RL1LL2Params = (LinearLayout.LayoutParams) RL1LL2.getLayoutParams();
-//        LinearLayout.LayoutParams RL1LL3Params = (LinearLayout.LayoutParams) RL1LL3.getLayoutParams();
-//        float totalWeight=RL1LL1Params.weight+RL1LL2Params.weight+RL1LL3Params.weight;
+//            GridLayout.LayoutParams cellBoard_Param = new GridLayout.LayoutParams();
+//            AppCompatImageView target = new AppCompatImageView(getBaseContext());
+//            cellBoard_Param.width = 180;
+//            cellBoard_Param.height = 180;
+//            cellBoard_Param.columnSpec = GridLayout.spec(cellY, 1, 1f);
+//            cellBoard_Param.rowSpec = GridLayout.spec(5 - cellX, 1, 1f);
+//            target.setContentDescription("target");
+//            target.setPadding(30, 30, 30, 30);
+//            target.setTag("newcell");
+//            target.setImageResource(R.drawable.piece_target);
+//            target.setLayoutParams(cellBoard_Param);
+//            gl_pieceBoard.addView(target);
 
 
-//        initializing second RelativeLayout
-//        LinearLayout RL2LL1 = (LinearLayout) findViewById(R.id.RL2LL1);
-//        RelativeLayout.LayoutParams RL2LL1Params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-//        RL2LL1Params.setMargins(0,(int) (app.height*RL1LL3Params.weight/totalWeight),0,(int) (app.height*RL1LL1Params.weight/totalWeight));
-//        RL2LL1.setLayoutParams(RL2LL1Params);
-
-//        Toast.makeText(this, "layout=" + RL2LL1.getLayoutParams(), Toast.LENGTH_SHORT).show();
+        }
+    };
 
 
 }
+
+
+
+
+
 
 
 

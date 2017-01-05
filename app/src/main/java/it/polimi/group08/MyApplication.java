@@ -17,9 +17,10 @@ public class MyApplication extends Application {
     int width;// display width（pixel）
     int height; // display height（pixel）
     float density;// display density （0.75 / 1.0 / 1.5）
-    int densityDpi;//dpi（120 / 160 / 240）
+    private int densityDpi;//dpi（120 / 160 / 240）
     int widthDp;//display width(dp)
     int heightDp;//display height(dp)
+    int dp;
 
     @Override
     public void onCreate() {

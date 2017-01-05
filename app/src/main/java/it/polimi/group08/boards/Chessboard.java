@@ -23,8 +23,8 @@ public class Chessboard {
     private int turnsNum;
     private int movePlayerInt;
 
-    private Piece[][] boardPiece;
-    private Piece[][] playerPiece;
+    public Piece[][] boardPiece;
+    public Piece[][] playerPiece;
 
     private String boardStr;
     private String boardTypeStr;
@@ -50,8 +50,9 @@ public class Chessboard {
 
         frozenPiece[0][2] = 0;
         frozenPiece[1][2] = 0;
-        setFrozenPieceStr();
         frozenPieceStr = "000000";
+        setFrozenPieceStr();
+
         unusedSpells = "FHRTFHRT";
         //        initializing boardPiece and playerPiece
         initPiece("n");
@@ -336,6 +337,17 @@ public class Chessboard {
         }
 
         return index;
+    }
+
+    public Set getAttackCells(int x, int y) {
+        Attack atk = new Attack();
+        return atk.getAvailCells(boardPiece, x, y);
+    }
+
+    public Set getMoveCells(int x, int y) {
+        Move mov = new Move();
+        return mov.getAvailCells(boardPiece, x, y);
+
     }
 
     private void print() {
