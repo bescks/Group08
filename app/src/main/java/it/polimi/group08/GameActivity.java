@@ -7,7 +7,10 @@ import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -26,6 +29,7 @@ public class GameActivity extends AppCompatActivity {
     GridLayout gl_ui_white;
     GridLayout gl_ui_black;
     GridLayout gl_cellBoard;
+    GridLayout gl_boarderBoard;
     RelativeLayout secondLayer;
     boolean[] moveIndex = new boolean[2];
     boolean[] attackIndex = new boolean[2];
@@ -33,6 +37,7 @@ public class GameActivity extends AppCompatActivity {
     int fromY;
     String action = "";
     ImageView emptyPiece;
+    Animation animation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,19 +60,26 @@ public class GameActivity extends AppCompatActivity {
         gl_ui_black = (GridLayout) findViewById(R.id.gl_ui_black);
         gl_pieceBoard.getLayoutParams().height = 1080;
         gl_pieceBoard.removeAllViews();
-        initPieceBoard();
-        refreshPieceBoard();
-//      secondLayer: 2nd GridLayout
+        gl_boarderBoard = (GridLayout) findViewById(R.id.rl_boarderBoard);
+
+
         for (int i = 0; i < 4; i++) {
-//            gl_ui_white.getChildAt(i).setOnClickListener(spellOnClick);
-//            gl_ui_black.getChildAt(i).setOnClickListener(spellOnClick);
+            gl_ui_white.getChildAt(i).setOnTouchListener(spellOnTouch);
+            gl_ui_black.getChildAt(i).setOnTouchListener(spellOnTouch);
+
         }
         for (int i = 4; i < gl_ui_white.getChildCount(); i++) {
+            gl_ui_white.getChildAt(i).setClickable(true);
             gl_ui_white.getChildAt(i).setOnClickListener(actionOnClick);
+            gl_ui_black.getChildAt(i).setClickable(true);
             gl_ui_black.getChildAt(i).setOnClickListener(actionOnClick);
         }
 //      thirdlayer layer: initialize cellBoard
         gl_cellBoard = (GridLayout) findViewById(R.id.gl_cellBoard);
+        initPieceBoard();
+        refreshPieceBoard();
+        initBoarderBoard();
+        refreshBoarderBoard();
         initCellBoard();
         refreshAction();
     }
@@ -86,6 +98,7 @@ public class GameActivity extends AppCompatActivity {
                 child.setTag(tag);
                 child.setImageResource(cell);
                 child.setScaleType(ImageView.ScaleType.FIT_XY);
+                child.setPadding(10, 10, 10, 10);
                 child.setLayoutParams(cellBackground_Param);
                 gl_cellBackground.addView(child);
             }
@@ -104,55 +117,68 @@ public class GameActivity extends AppCompatActivity {
                 String tag = "cell" + i + j;
                 child.setTag(tag);
                 child.setClickable(true);
-                child.setOnClickListener(cellOnClick);
                 child.setLayoutParams(cellBoard_Param);
+                child.setOnTouchListener(cellOnTouch);
                 gl_cellBoard.addView(child);
+
             }
         }
     }
 
-    private View.OnClickListener cellOnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View cell) {
-            if (gl_pieceBoard.getChildCount() > 36) {
-                gl_pieceBoard.removeViews(36, gl_pieceBoard.getChildCount() - 36);
+    private void initPieceBoard() {
+        for (int r = 0; r < 6; r++) {
+            for (int c = 0; c < 6; c++) {
+                AppCompatImageView emptyPieceImage = new AppCompatImageView(getBaseContext());
+                GridLayout.LayoutParams emptyPieceImage_Param = new GridLayout.LayoutParams();
+                emptyPieceImage_Param.width = 180;
+                emptyPieceImage_Param.height = 180;
+                emptyPieceImage_Param.columnSpec = GridLayout.spec(c, 1, 1f);
+                emptyPieceImage_Param.rowSpec = GridLayout.spec(5 - r, 1, 1f);
+                emptyPieceImage.setLayoutParams(emptyPieceImage_Param);
+                emptyPieceImage.setPadding(20, 20, 20, 20);
+                emptyPieceImage.setTag("000");
+                gl_pieceBoard.addView(emptyPieceImage);
             }
-            moveIndex[0] = false;
-            attackIndex[0] = false;
-            moveIndex[1] = false;
-            attackIndex[1] = false;
-            int cellX = 5 - Integer.parseInt(cell.getTag().toString().substring(4, 5));
-            int cellY = Integer.parseInt(cell.getTag().toString().substring(5, 6));
-            System.out.println("action=" + action);
-            if (action.equals("")) {
-                if (chessboard.boardPiece[cellX][cellY].getTypeInt() == chessboard.movePlayerInt
-                        && chessboard.boardPiece[cellX][cellY].state.equals("n")) {
-                    if (!chessboard.getMoveCells(cellX, cellY).isEmpty()) {
-                        moveIndex[chessboard.boardPiece[cellX][cellY].getPlayerX()] = true;
-                    }
-                    if (!chessboard.getAttackCells(cellX, cellY).isEmpty()) {
-                        attackIndex[chessboard.boardPiece[cellX][cellY].getPlayerX()] = true;
-                    }
-                    fromX = cellX;
-                    fromY = cellY;
-                }
-                refreshAction();
-            } else {
-                System.out.println("action=" + action);
-                System.out.println("fromX=" + fromX);
-                System.out.println("fromY=" + fromY);
-                System.out.println("cellX=" + cellX);
-                System.out.println("cellY=" + cellY);
+        }
+    }
 
-                if (chessboard.isAction(action + (fromX + 1) + (fromY + 1) + (cellX + 1) + (cellY + 1))) {
-                    refreshPieceBoard();
-                    refreshAction();
-                }
-                action = "";
+    private void initBoarderBoard() {
+        for (int r = 0; r < 6; r++) {
+            for (int c = 0; c < 6; c++) {
+                AppCompatImageView boarderImage = new AppCompatImageView(getBaseContext());
+                GridLayout.LayoutParams boarderImage_Param = new GridLayout.LayoutParams();
+                boarderImage_Param.width = 180;
+                boarderImage_Param.height = 180;
+                boarderImage_Param.columnSpec = GridLayout.spec(c, 1, 1f);
+                boarderImage_Param.rowSpec = GridLayout.spec(5 - r, 1, 1f);
+                boarderImage.setLayoutParams(boarderImage_Param);
+                boarderImage.setPadding(0, 0, 0, 0);
+                gl_boarderBoard.addView(boarderImage);
             }
 
         }
-    };
+    }
+
+    private void refreshBoarderBoard() {
+        Animation boardAm = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.boarder_flash);
+        for (int r = 0; r < 6; r++) {
+            for (int c = 0; c < 6; c++) {
+                AppCompatImageView boarderImage = (AppCompatImageView) gl_boarderBoard.getChildAt(c + 6 * r);
+                if (chessboard.boardPiece[r][c].getTypeInt() == chessboard.movePlayerInt) {
+                    if (chessboard.movePlayerInt == 1) {
+                        boarderImage.setImageResource(R.drawable.piece_boarder_white);
+                    } else if (chessboard.boardPiece[r][c].getTypeInt() == -1) {
+                        boarderImage.setImageResource(R.drawable.piece_boarder_black);
+                    }
+                    boarderImage.startAnimation(boardAm);
+                } else {
+                    boarderImage.setImageResource(0);
+                    boarderImage.animate().cancel();
+                }
+            }
+        }
+    }
+
 
     private View.OnClickListener actionOnClick = new View.OnClickListener() {
         @Override
@@ -160,9 +186,9 @@ public class GameActivity extends AppCompatActivity {
             if (gl_pieceBoard.getChildCount() > 36) {
                 gl_pieceBoard.removeViews(36, gl_pieceBoard.getChildCount() - 36);
             }
+            System.out.println("actiononclik=" + action);
             Set cellSet = new TreeSet();
             if (view.getTag().equals("move")) {
-                System.out.println("jinlaile");
                 cellSet = chessboard.getMoveCells(fromX, fromY);
                 action = "M";
             }
@@ -191,8 +217,118 @@ public class GameActivity extends AppCompatActivity {
                     target.setImageResource(R.drawable.piece_target_attack);
                 }
                 gl_pieceBoard.addView(target);
+                Animation targetAppear = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.target_appear);
+                target.startAnimation(targetAppear);
             }
 
+        }
+    };
+    private View.OnTouchListener cellOnTouch = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (gl_pieceBoard.getChildCount() > 36) {
+                gl_pieceBoard.removeViews(36, gl_pieceBoard.getChildCount() - 36);
+            }
+            moveIndex[0] = false;
+            attackIndex[0] = false;
+            moveIndex[1] = false;
+            attackIndex[1] = false;
+            int cellX = 5 - Integer.parseInt(v.getTag().toString().substring(4, 5));
+            int cellY = Integer.parseInt(v.getTag().toString().substring(5, 6));
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN: {
+                    if (chessboard.boardPiece[cellX][cellY].getTypeInt() == chessboard.movePlayerInt) {
+                        animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.touch_down);
+                        gl_pieceBoard.getChildAt(6 * cellX + cellY).startAnimation(animation);
+                    }
+                    break;
+                }
+                case MotionEvent.ACTION_UP: {
+                    if (chessboard.boardPiece[cellX][cellY].getTypeInt() == chessboard.movePlayerInt) {
+                        animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.touch_up);
+                        gl_pieceBoard.getChildAt(6 * cellX + cellY).startAnimation(animation);
+                    }
+                    if (action.equals("")) {
+                        if (chessboard.boardPiece[cellX][cellY].getTypeInt() == chessboard.movePlayerInt
+                                && chessboard.boardPiece[cellX][cellY].state.equals("n")) {
+                            if (!chessboard.getMoveCells(cellX, cellY).isEmpty()) {
+                                moveIndex[chessboard.boardPiece[cellX][cellY].getPlayerX()] = true;
+                            }
+                            if (!chessboard.getAttackCells(cellX, cellY).isEmpty()) {
+                                attackIndex[chessboard.boardPiece[cellX][cellY].getPlayerX()] = true;
+                            }
+                            fromX = cellX;
+                            fromY = cellY;
+                        }
+                        refreshAction();
+                    } else {
+                        if (action.equals("M") || action.equals("A") || action.equals("T")) {
+                            if (chessboard.isAction(action + (fromX + 1) + (fromY + 1) + (cellX + 1) + (cellY + 1))) {
+                                refreshAction();
+                                refreshPieceBoard();
+                                refreshBoarderBoard();
+                            } else {
+                                fromX = cellX;
+                                fromY = cellY;
+                            }
+                        } else {
+                            if (chessboard.isAction(action + (cellX + 1) + (cellY + 1) + 0 + 0)) {
+                                refreshAction();
+                                refreshPieceBoard();
+                                refreshBoarderBoard();
+                            } else {
+                                fromX = cellX;
+                                fromY = cellY;
+                            }
+                        }
+                        action = "";
+                    }
+                    break;
+                }
+            }
+
+
+            return true;
+        }
+    };
+
+    private View.OnTouchListener spellOnTouch = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (gl_pieceBoard.getChildCount() > 36) {
+                gl_pieceBoard.removeViews(36, gl_pieceBoard.getChildCount() - 36);
+            }
+            switch (v.getTag().toString()) {
+                case "Heal": {
+                    action = "H";
+                    break;
+                }
+                case "Teleport": {
+                    action = "T";
+                    break;
+                }
+                case "Revive": {
+                    action = "R";
+                    break;
+                }
+                case "Freeze": {
+                    action = "F";
+                    break;
+                }
+            }
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN: {
+                    animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.touch_down);
+                    v.startAnimation(animation);
+                    break;
+                }
+                case MotionEvent.ACTION_UP: {
+                    animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.touch_up);
+                    v.startAnimation(animation);
+                    break;
+                }
+            }
+            return true;
         }
     };
 
@@ -241,22 +377,6 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    private void initPieceBoard() {
-        for (int r = 0; r < 6; r++) {
-            for (int c = 0; c < 6; c++) {
-                AppCompatImageView emptyPieceImage = new AppCompatImageView(getBaseContext());
-                GridLayout.LayoutParams emptyPieceImage_Param = new GridLayout.LayoutParams();
-                emptyPieceImage_Param.width = 180;
-                emptyPieceImage_Param.height = 180;
-                emptyPieceImage_Param.columnSpec = GridLayout.spec(c, 1, 1f);
-                emptyPieceImage_Param.rowSpec = GridLayout.spec(5 - r, 1, 1f);
-                emptyPieceImage.setLayoutParams(emptyPieceImage_Param);
-                emptyPieceImage.setPadding(0, 6, 0, 12);
-                emptyPieceImage.setTag("000");
-                gl_pieceBoard.addView(emptyPieceImage);
-            }
-        }
-    }
 
     private void refreshPieceBoard() {
         for (int r = 0; r < 6; r++) {
@@ -268,6 +388,7 @@ public class GameActivity extends AppCompatActivity {
                         pieceImage.setBackgroundResource(R.drawable.piece_bg_white);
                         Resources res = this.getResources();
                         pieceImage.setImageResource(res.getIdentifier(chessboard.boardPiece[r][c].getImageName(), "drawable", this.getPackageName()));
+                        pieceImage.setRotation(0);
                     } else if (chessboard.boardPiece[r][c].getTypeInt() == -1) {
                         pieceImage.setBackgroundResource(R.drawable.piece_bg_black);
                         Resources res = this.getResources();
@@ -277,7 +398,6 @@ public class GameActivity extends AppCompatActivity {
                         pieceImage.setImageResource(0);
                         pieceImage.setBackgroundResource(0);
                     }
-
                 }
             }
         }

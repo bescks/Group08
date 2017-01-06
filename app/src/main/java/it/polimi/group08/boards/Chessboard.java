@@ -299,6 +299,7 @@ public class Chessboard {
                     refreshBoardStr();
                     index = true;
                 }
+                print();
                 break;
             }
             case "T": {
@@ -307,6 +308,7 @@ public class Chessboard {
                     refreshBoardStr();
                     index = true;
                 }
+                print();
                 break;
             }
             case "R": {
@@ -315,6 +317,7 @@ public class Chessboard {
                     refreshBoardStr();
                     index = true;
                 }
+                print();
                 break;
             }
             case "F": {
@@ -332,6 +335,7 @@ public class Chessboard {
                     refreshBoardStr();
                     index = true;
                 }
+                print();
                 break;
             }
             default:
