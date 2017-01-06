@@ -8,6 +8,7 @@ public class Knight extends Piece {
     public Knight(String c, int x1, int y1, int x2, int y2) {
 
         super(4, 1, "*", "walk", 1, 2, "x", c, "0");
+        super.imageName ="piece_knight";
         super.twinIndex = true;
         super.initPositionX = x1;
         super.initPositionY = y1;

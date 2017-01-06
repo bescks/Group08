@@ -8,6 +8,7 @@ public class Dragon extends Piece {
 
     public Dragon(String c) {
         super(6, 3, "+", "flight", 2, 3, "+", c, "0");
+        super.imageName ="piece_dragon";
         super.playerY = 1;
         switch (c) {
             case "white":

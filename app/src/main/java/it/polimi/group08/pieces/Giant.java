@@ -9,6 +9,7 @@ public class Giant extends Piece {
 
     public Giant(String c) {
         super(5, 2, "+", "walk", 1, 4, "+", c, "0");
+        super.imageName ="piece_giant";
         super.playerY=0;
         switch (c) {
             case "white":

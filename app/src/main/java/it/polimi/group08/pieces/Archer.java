@@ -8,6 +8,7 @@ public class Archer extends Piece {
 
     public Archer(String c) {
         super(5, 2, "*", "walk", 3, 2, "+", c, "0");
+        super.imageName ="piece_archer";
         super.playerY=3;
         switch (c) {
             case "white":

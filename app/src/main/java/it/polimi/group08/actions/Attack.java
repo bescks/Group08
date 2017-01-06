@@ -113,6 +113,9 @@ If the nearest piece is a friend piece, there must be no cell can be attacked in
                 }
                 break;
             }
+            case "": {
+                break;
+            }
             default:
                 System.out.println("ERROR:<Piece " + piece[fromX][fromY].getType() + " has an invalid attackDirections " + piece[fromX][fromY].getAttackDirections() + " !>");
         }

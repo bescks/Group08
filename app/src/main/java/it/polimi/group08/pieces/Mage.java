@@ -8,6 +8,7 @@ public class Mage extends Piece {
 
     public Mage(String c) {
         super(7, 1, "*", "walk", 0, 2, "", c, "0");
+        super.imageName ="piece_mage";
         super.spells="FHRT";
         super.playerY=2;
         switch (c) {

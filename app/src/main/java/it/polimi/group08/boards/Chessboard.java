@@ -21,7 +21,7 @@ public class Chessboard {
     private GlobalVariables gV = new GlobalVariables();
     private Piece emptyPiece = gV.piece(0, 0);
     private int turnsNum;
-    private int movePlayerInt;
+    public int movePlayerInt;
 
     public Piece[][] boardPiece;
     public Piece[][] playerPiece;
@@ -272,7 +272,6 @@ public class Chessboard {
                     refreshBoardStr();
                     index = true;
                 }
-                System.out.println("after");
                 print();
                 break;
             }
@@ -284,23 +283,6 @@ public class Chessboard {
                     index = true;
                 }
                 print();
-                break;
-            }
-            case "F": {
-                Freeze fre = new Freeze();
-                System.out.println(actionStr);
-                if (fre.isFreezed(movePlayerInt, boardPiece, fromX, fromY, emptyPiece)) {
-                    if (movePlayerInt == 1) {
-                        frozenPiece[1][0] = fromX;
-                        frozenPiece[1][1] = fromX;
-                        frozenPiece[1][2] = 3;
-                    } else {
-                        frozenPiece[0][0] = fromX;
-                        frozenPiece[0][1] = fromX;
-                        frozenPiece[0][2] = 3;
-                    }
-                    index = true;
-                }
                 break;
             }
             case "H": {
@@ -330,10 +312,27 @@ public class Chessboard {
                 }
                 break;
             }
+            case "F": {
+                Freeze fre = new Freeze();
+                System.out.println(actionStr);
+                if (fre.isFreezed(movePlayerInt, boardPiece, fromX, fromY, emptyPiece)) {
+                    if (movePlayerInt == 1) {
+                        frozenPiece[1][0] = fromX;
+                        frozenPiece[1][1] = fromX;
+                        frozenPiece[1][2] = 3;
+                    } else {
+                        frozenPiece[0][0] = fromX;
+                        frozenPiece[0][1] = fromX;
+                        frozenPiece[0][2] = 3;
+                    }
+                    index = true;
+                }
+                break;
+            }
+
+
             default:
                 System.out.println("ERROR:<The action is invalid!>");
-
-
         }
 
         return index;

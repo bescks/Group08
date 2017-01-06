@@ -26,6 +26,7 @@ public class Piece {
     int playerY = 0;
     boolean twinIndex = false;
     public String spells = "";
+    String imageName = "";
 
     public Piece(int iV, int mR, String mD, String mT, int aR, int aS, String aD, String c, String t) {
 
@@ -138,5 +139,7 @@ public class Piece {
         return attackDirections;
     }
 
-
+    public String getImageName() {
+        return imageName;
+    }
 }

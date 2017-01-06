@@ -8,7 +8,7 @@ public class Squire extends Piece {
     public Squire(String c, int x1, int y1, int x2, int y2) {
 
         super(3, 1, "+", "walk", 0, 1, "", c, "0");
-
+        super.imageName ="piece_squire";
         super.twinIndex = true;
         super.initPositionX = x1;
         super.initPositionY = y1;
