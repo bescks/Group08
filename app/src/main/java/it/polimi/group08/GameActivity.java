@@ -58,6 +58,10 @@ public class GameActivity extends AppCompatActivity {
         initPieceBoard();
         refreshPieceBoard();
 //      secondLayer: 2nd GridLayout
+        for (int i = 0; i < 4; i++) {
+//            gl_ui_white.getChildAt(i).setOnClickListener(spellOnClick);
+//            gl_ui_black.getChildAt(i).setOnClickListener(spellOnClick);
+        }
         for (int i = 4; i < gl_ui_white.getChildCount(); i++) {
             gl_ui_white.getChildAt(i).setOnClickListener(actionOnClick);
             gl_ui_black.getChildAt(i).setOnClickListener(actionOnClick);

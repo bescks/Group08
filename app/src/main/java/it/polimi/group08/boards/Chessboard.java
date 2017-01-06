@@ -75,6 +75,9 @@ public class Chessboard {
     }
 
     public void setBoardWithStr(String m, String b, String v, String f, String u) {
+        if (m.length() + b.length() + v.length() + f.length() + u.length() != 67) {
+            System.out.println("ERROR:<The length of input String is in correct!>");
+        }
         turnsNum = 1;
         switch (m) {
             case "W": {
@@ -102,6 +105,7 @@ public class Chessboard {
             frozenPiece[1][2] = Integer.parseInt(f.substring(5, 6));
         }
         unusedSpells = u;
+        resultStr = "";
         setPiece();
     }
 
@@ -132,8 +136,11 @@ public class Chessboard {
                 }
             }
         }
-        if (vitalityNum != vitalityStr.indexOf("0")) {
-            System.out.println("ERROR:<The  length of vitalityStr is less than number of piece!>");
+        if (vitalityNum != vitalityStr.indexOf("0") || (vitalityNum == 17 && vitalityStr.indexOf("0") == -1)) {
+            System.out.println("ERROR:<The length of vitalityStr "
+                    + vitalityStr.indexOf("0") +
+                    " is not equal to number of piece "
+                    + vitalityNum + " !>");
         }
         if (frozenPiece[0][2] != 0)
             boardPiece[frozenPiece[0][0]][frozenPiece[0][1]].state = "f";
@@ -189,12 +196,12 @@ public class Chessboard {
         if (movePlayerInt == 1) boardStr += "W";
         else boardStr += "B";
         vitalityStr = (vitalityStr + "0000000000000000").substring(0, 16);
+        unusedSpells = playerPiece[0][2].spells + playerPiece[1][2].spells;
         boardStr = boardStr
                 + boardTypeStr
                 + vitalityStr
                 + frozenPieceStr
-                + playerPiece[0][2].spells
-                + playerPiece[1][2].spells;
+                + unusedSpells;
     }
 
     public String getBoardStr() {
@@ -257,6 +264,9 @@ public class Chessboard {
     }
 
     public boolean isAction(String actionStr) {
+        if (actionStr.length() != 5) {
+            System.out.println("The length of action is incorrect!");
+        }
         boolean index = false;
         String action = actionStr.substring(0, 1);
         int fromX = Integer.parseInt(actionStr.substring(1, 2)) - 1;
@@ -266,7 +276,6 @@ public class Chessboard {
         switch (action) {
             case "M": {
                 Move mov = new Move();
-                System.out.println(actionStr);
                 print();
                 if (mov.isMoved(movePlayerInt, boardPiece, fromX, fromY, toX, toY, emptyPiece)) {
                     refreshBoardStr();
@@ -277,7 +286,6 @@ public class Chessboard {
             }
             case "A": {
                 Attack atk = new Attack();
-                System.out.println(actionStr);
                 if (atk.isAttacked(movePlayerInt, boardPiece, fromX, fromY, toX, toY, emptyPiece)) {
                     refreshBoardStr();
                     index = true;
@@ -287,7 +295,6 @@ public class Chessboard {
             }
             case "H": {
                 Heal hea = new Heal();
-                System.out.println(actionStr);
                 if (hea.isHealed(movePlayerInt, boardPiece, fromX, fromY, emptyPiece)) {
                     refreshBoardStr();
                     index = true;
@@ -296,7 +303,6 @@ public class Chessboard {
             }
             case "T": {
                 Teleport tel = new Teleport();
-                System.out.println(actionStr);
                 if (tel.isTeleported(movePlayerInt, boardPiece, fromX, fromY, toX, toY, emptyPiece)) {
                     refreshBoardStr();
                     index = true;
@@ -305,7 +311,6 @@ public class Chessboard {
             }
             case "R": {
                 Revive rev = new Revive();
-                System.out.println(actionStr);
                 if (rev.isRevived(movePlayerInt, playerPiece, boardPiece, fromX, fromY, emptyPiece)) {
                     refreshBoardStr();
                     index = true;
@@ -314,27 +319,26 @@ public class Chessboard {
             }
             case "F": {
                 Freeze fre = new Freeze();
-                System.out.println(actionStr);
                 if (fre.isFreezed(movePlayerInt, boardPiece, fromX, fromY, emptyPiece)) {
                     if (movePlayerInt == 1) {
                         frozenPiece[1][0] = fromX;
-                        frozenPiece[1][1] = fromX;
+                        frozenPiece[1][1] = fromY;
                         frozenPiece[1][2] = 3;
                     } else {
                         frozenPiece[0][0] = fromX;
-                        frozenPiece[0][1] = fromX;
+                        frozenPiece[0][1] = fromY;
                         frozenPiece[0][2] = 3;
                     }
+                    refreshBoardStr();
                     index = true;
                 }
                 break;
             }
-
-
             default:
                 System.out.println("ERROR:<The action is invalid!>");
         }
-
+        if (index) System.out.println("INFO:<The action is executed successfully!>");
+        else System.out.println("ERROR:<The action is not executed!>");
         return index;
     }
 
@@ -349,8 +353,8 @@ public class Chessboard {
 
     }
 
-    private void print() {
-        System.out.println("*******************************");
+    public void print() {
+        System.out.println("********************************");
         if (movePlayerInt == 1) {
             System.out.println("W");
         } else {
@@ -366,6 +370,6 @@ public class Chessboard {
         System.out.println(vitalityStr);
         System.out.println(frozenPieceStr);
         System.out.println(unusedSpells);
-        System.out.println("*******************************");
+        System.out.println(resultStr + "*******************************");
     }
 }

@@ -15,12 +15,12 @@ public class Giant extends Piece {
             case "white":
                 super.type = "G";
                 super.initPositionX = 0;
-                super.initPositionX = 1;
+                super.initPositionY = 1;
                 break;
             case "black":
                 super.type = "g";
                 super.initPositionX = 5;
-                super.initPositionX = 4;
+                super.initPositionY = 4;
                 break;
             default:
                 System.out.println("ERROR:<Invalid color for piece Giant!>");

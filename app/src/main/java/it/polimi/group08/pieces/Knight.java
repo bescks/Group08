@@ -41,6 +41,8 @@ public class Knight extends Piece {
                 super.type = "k";
                 break;
             }
+            default:
+                System.out.println("ERROR:<Invalid color for piece Knight!>");
         }
     }
 }

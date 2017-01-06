@@ -23,21 +23,28 @@ public class Revive {
         } else if (!pieceMage.spells.substring(2, 3).equals("R")) {
             System.out.println("ERROR:<The revive spell has been casted!>");
         } else if (revivedPiece.state.equals("n")) {
-            System.out.println("ERROR:<The cannot choose a alive piece " + piece[fromX][fromY].getType() + " to revive!>");
+            System.out.println("ERROR:<The cannot choose a alive piece " + revivedPiece.getType() + " to revive!>");
         } else if (revivedPiece.getTypeInt() == 0) {
-            System.out.println("ERROR:<Your cannot choose an empty piece to revive!>");
+            System.out.println("ERROR:<Your cannot choose an empty " + revivedPiece.getType() + " piece to revive!>");
         } else if (revivedPiece.getTypeInt() != movPlayerInt) {
             System.out.println("ERROR:<Your cannot choose an enemy piece to revive!>");
-        } else if (!revivedPiece.isTwin() && piece[fromX][fromY].getTypeInt() == movPlayerInt) {
-            System.out.println("ERROR:<The revive cell is occupied by friendly piece " + piece[fromX][fromY].getType() + " !>");
-        } else if (revivedPiece.isTwin()
-                && piece[fromX][fromY].getTypeInt() == movPlayerInt
-                && piece[revivedPiece.getTwinX()][revivedPiece.getTwinY()].getTypeInt() == movPlayerInt) {
-            System.out.println("ERROR:<The revive cell and it's twin cell are all occupied by friendly piece !>");
-        } else {
-            index = true;
+        } else if (!revivedPiece.isTwin()) {
+            if (piece[fromX][fromY].getTypeInt() == movPlayerInt) {
+                System.out.println("ERROR:<The revive cell is occupied by friendly piece " + piece[fromX][fromY].getType() + " !>");
+            } else if (piece[fromX][fromY].getPlayerY() == 2) {
+                System.out.println("ERROR:<The revive cell is occupied by enemy mage " + piece[fromX][fromY].getType() + " !>");
+            } else index = true;
+        } else if (revivedPiece.isTwin()) {
+            if ((piece[fromX][fromY].getTypeInt() == movPlayerInt || piece[fromX][fromY].getPlayerY() == 2)
+                    && (piece[revivedPiece.getTwinX()][revivedPiece.getTwinY()].getTypeInt() == movPlayerInt
+                    || piece[revivedPiece.getTwinX()][revivedPiece.getTwinY()].getPlayerY() == 2)) {
+                System.out.println("ERROR:<The revive cell and it's twin cell are all occupied by friendly piece or enemy mage !>");
+            } else index = true;
+        }
+        if (index) {
             pieceMage.spells = pieceMage.spells.replace('R', '0');
-            if (revivedPiece.isTwin() && piece[fromX][fromY].getTypeInt() == movPlayerInt) {
+            if (revivedPiece.isTwin() && (piece[fromX][fromY].getTypeInt() == movPlayerInt
+                    || piece[fromX][fromY].getPlayerY() == 2)) {
                 revivedPiece = playerPiece[revivedPiece.getPlayerX()][revivedPiece.getTwinPlayerY()];
             }
             fromX = revivedPiece.getInitPositionX();
@@ -48,6 +55,7 @@ public class Revive {
                 piece[fromX][fromY] = revivedPiece;
             } else if (piece[fromX][fromY].state.equals("f")) {
                 piece[fromX][fromY].state = "d";
+                piece[fromX][fromY] = revivedPiece;
             } else {
                 while (piece[fromX][fromY].vitality > 0 && revivedPiece.vitality > 0) {
                     piece[fromX][fromY].vitality -= revivedPiece.getAttackStrength();

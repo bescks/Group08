@@ -39,6 +39,8 @@ public class Squire extends Piece {
                 super.type = "s";
                 break;
             }
+            default:
+                System.out.println("ERROR:<Invalid color for piece Squire!>");
         }
 
     }

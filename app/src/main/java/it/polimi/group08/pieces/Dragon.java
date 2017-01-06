@@ -14,15 +14,15 @@ public class Dragon extends Piece {
             case "white":
                 super.type = "D";
                 super.initPositionX = 0;
-                super.initPositionX = 2;
+                super.initPositionY = 2;
                 break;
             case "black":
                 super.type = "d";
                 super.initPositionX = 5;
-                super.initPositionX = 3;
+                super.initPositionY = 3;
                 break;
             default:
-                System.out.println("ERROR:<Invalid color for piece dragon!>");
+                System.out.println("ERROR:<Invalid color for piece Dragon!>");
         }
 
     }

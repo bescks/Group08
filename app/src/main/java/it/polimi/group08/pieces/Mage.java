@@ -15,12 +15,12 @@ public class Mage extends Piece {
             case "white":
                 super.type = "M";
                 super.initPositionX = 0;
-                super.initPositionX = 3;
+                super.initPositionY = 3;
                 break;
             case "black":
                 super.type = "m";
                 super.initPositionX = 5;
-                super.initPositionX = 2;
+                super.initPositionY = 2;
                 break;
             default:
                 System.out.println("ERROR:<Invalid color for piece Mage!>");

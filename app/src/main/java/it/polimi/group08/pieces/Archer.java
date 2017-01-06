@@ -14,12 +14,12 @@ public class Archer extends Piece {
             case "white":
                 super.type = "A";
                 super.initPositionX = 0;
-                super.initPositionX = 5;
+                super.initPositionY = 4;
                 break;
             case "black":
                 super.type = "a";
                 super.initPositionX = 5;
-                super.initPositionX = 5;
+                super.initPositionY = 1;
                 break;
             default:
                 System.out.println("ERROR:<Invalid color for piece Archer!>");
