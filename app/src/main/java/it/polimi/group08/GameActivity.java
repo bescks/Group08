@@ -5,39 +5,77 @@ import android.content.res.Resources;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Chronometer;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.Set;
 import java.util.TreeSet;
 
 import it.polimi.group08.boards.Chessboard;
 
-import static it.polimi.group08.R.drawable.cell;
+import static it.polimi.group08.R.id.tv_attack_white;
 
 public class GameActivity extends AppCompatActivity {
     Chessboard chessboard = new Chessboard();
     GridLayout gl_cellBackground;
     GridLayout gl_pieceBoard;
-    GridLayout gl_ui_white;
-    GridLayout gl_ui_black;
+    GridLayout gl_action_white;
+    GridLayout gl_action_black;
     GridLayout gl_cellBoard;
     GridLayout gl_boarderBoard;
+    RelativeLayout rl_vitality_white;
+    GridLayout gl_details_white;
+    RelativeLayout rl_vitality_black;
+    GridLayout gl_details_black;
     RelativeLayout secondLayer;
+
+    TextView tv_vitality_white;
+    TextView tv_vitality_black;
+
+    TextView tv_moveRange_white;
+    TextView tv_moveRange_black;
+
+    TextView tv_moveType_white;
+    TextView tv_moveType_black;
+
+    TextView tv_moveDirections_white;
+    TextView tv_moveDirections_black;
+
+    TextView tv_attackRange_white;
+    TextView tv_attackRange_black;
+
+    TextView tv_attackStrength_white;
+    TextView tv_attackStrength_black;
+
+    TextView tv_attackDirections_white;
+    TextView tv_attackDirections_black;
+
+    TextView tv_score_white;
+    TextView tv_score_black;
+
+    Chronometer chronometer_white;
+    Chronometer chronometer_black;
+    long timeWhenStoppedWhite = 0;
+    long timeWhenStoppedBlack = 0;
+
+
     boolean[] moveIndex = new boolean[2];
     boolean[] attackIndex = new boolean[2];
     int fromX;
     int fromY;
     String action = "";
-    ImageView emptyPiece;
     Animation animation;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,25 +94,56 @@ public class GameActivity extends AppCompatActivity {
 //      secondlayer :initialization
         gl_pieceBoard = (GridLayout) findViewById(R.id.gl_pieceBoard);
         secondLayer = (RelativeLayout) findViewById(R.id.rl_secondLayer);
-        gl_ui_white = (GridLayout) findViewById(R.id.gl_ui_white);
-        gl_ui_black = (GridLayout) findViewById(R.id.gl_ui_black);
+        gl_action_white = (GridLayout) findViewById(R.id.gl_action_white);
+        gl_action_black = (GridLayout) findViewById(R.id.gl_action_black);
         gl_pieceBoard.getLayoutParams().height = 1080;
         gl_pieceBoard.removeAllViews();
         gl_boarderBoard = (GridLayout) findViewById(R.id.rl_boarderBoard);
-
+        rl_vitality_white = (RelativeLayout) findViewById(R.id.rl_vitality_white);
+        rl_vitality_black = (RelativeLayout) findViewById(R.id.rl_vitality_black);
+        gl_details_white = (GridLayout) findViewById(R.id.gl_details_white);
+        gl_details_black = (GridLayout) findViewById(R.id.gl_details_black);
 
         for (int i = 0; i < 4; i++) {
-            gl_ui_white.getChildAt(i).setOnTouchListener(spellOnTouch);
-            gl_ui_black.getChildAt(i).setOnTouchListener(spellOnTouch);
+            gl_action_white.getChildAt(i).setOnTouchListener(spellOnTouch);
+            gl_action_black.getChildAt(i).setOnTouchListener(spellOnTouch);
 
         }
-        for (int i = 4; i < gl_ui_white.getChildCount(); i++) {
-            gl_ui_white.getChildAt(i).setClickable(true);
-            gl_ui_white.getChildAt(i).setOnClickListener(actionOnClick);
-            gl_ui_black.getChildAt(i).setClickable(true);
-            gl_ui_black.getChildAt(i).setOnClickListener(actionOnClick);
+        for (int i = 4; i < gl_action_white.getChildCount(); i++) {
+            gl_action_white.getChildAt(i).setClickable(true);
+            gl_action_white.getChildAt(i).setOnClickListener(actionOnClick);
+            gl_action_black.getChildAt(i).setClickable(true);
+            gl_action_black.getChildAt(i).setOnClickListener(actionOnClick);
         }
-//      thirdlayer layer: initialize cellBoard
+
+        tv_vitality_white = (TextView) findViewById(R.id.tv_vitality2_white);
+        tv_vitality_black = (TextView) findViewById(R.id.tv_vitality2_black);
+
+        tv_moveRange_white = (TextView) findViewById(R.id.tv_moveRange2_white);
+        tv_moveRange_black = (TextView) findViewById(R.id.tv_moveRange2_black);
+
+        tv_moveType_white = (TextView) findViewById(R.id.tv_moveType2_white);
+        tv_moveType_black = (TextView) findViewById(R.id.tv_moveType2_black);
+
+        tv_moveDirections_white = (TextView) findViewById(R.id.tv_moveDirections2_white);
+        tv_moveDirections_black = (TextView) findViewById(R.id.tv_moveDirections2_black);
+
+        tv_attackRange_white = (TextView) findViewById(R.id.tv_attackRange2_white);
+        tv_attackRange_black = (TextView) findViewById(R.id.tv_attackRange2_black);
+
+        tv_attackStrength_white = (TextView) findViewById(R.id.tv_attackStrength2_white);
+        tv_attackStrength_black = (TextView) findViewById(R.id.tv_attackStrength2_black);
+
+        tv_attackDirections_white = (TextView) findViewById(R.id.tv_attackDirections2_white);
+        tv_attackDirections_black = (TextView) findViewById(R.id.tv_attackDirections2_black);
+
+        tv_score_white = (TextView) findViewById(R.id.tv_score_white);
+        tv_score_black = (TextView) findViewById(R.id.tv_score_black);
+
+        chronometer_white = (Chronometer) findViewById(R.id.chronometer_white);
+        chronometer_black = (Chronometer) findViewById(R.id.chronometer_black);
+
+//      er layer: initialize cellBoard
         gl_cellBoard = (GridLayout) findViewById(R.id.gl_cellBoard);
         initPieceBoard();
         refreshPieceBoard();
@@ -82,6 +151,10 @@ public class GameActivity extends AppCompatActivity {
         refreshBoarderBoard();
         initCellBoard();
         refreshAction();
+        refreshPieceInfo(false, 0, 0);
+        chronometer_white.start();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
     }
 
     private void initCellBackground() {
@@ -96,11 +169,58 @@ public class GameActivity extends AppCompatActivity {
                 cellBackground_Param.rowSpec = GridLayout.spec(i, 1);
                 String tag = "bg_cell" + j + i;
                 child.setTag(tag);
-                child.setImageResource(cell);
+                if (chessboard.gV.specialCellsSet().contains("" + (5 - i) + j)) {
+                    child.setImageResource(R.drawable.cell_special);
+                } else {
+                    child.setImageResource(R.drawable.cell);
+                }
+
                 child.setScaleType(ImageView.ScaleType.FIT_XY);
                 child.setPadding(10, 10, 10, 10);
                 child.setLayoutParams(cellBackground_Param);
                 gl_cellBackground.addView(child);
+            }
+        }
+    }
+
+    private void initPieceBoard() {
+        for (int r = 0; r < 6; r++) {
+            for (int c = 0; c < 6; c++) {
+                AppCompatImageView emptyPieceImage = new AppCompatImageView(getBaseContext());
+                GridLayout.LayoutParams emptyPieceImage_Param = new GridLayout.LayoutParams();
+                emptyPieceImage_Param.width = 180;
+                emptyPieceImage_Param.height = 180;
+                emptyPieceImage_Param.columnSpec = GridLayout.spec(c, 1, 1f);
+                emptyPieceImage_Param.rowSpec = GridLayout.spec(5 - r, 1, 1f);
+                emptyPieceImage.setLayoutParams(emptyPieceImage_Param);
+                emptyPieceImage.setPadding(20, 20, 20, 20);
+                emptyPieceImage.setTag("000");
+                gl_pieceBoard.addView(emptyPieceImage);
+            }
+        }
+    }
+
+    private void refreshPieceBoard() {
+        for (int r = 0; r < 6; r++) {
+            for (int c = 0; c < 6; c++) {
+                AppCompatImageView pieceImage = (AppCompatImageView) gl_pieceBoard.getChildAt(c + 6 * r);
+                if (!pieceImage.getTag().toString().substring(0, 1).equals(chessboard.boardPiece[r][c].getType())) {
+                    pieceImage.setTag(chessboard.boardPiece[r][c].getType() + r + c);
+                    if (chessboard.boardPiece[r][c].getTypeInt() == 1) {
+                        pieceImage.setBackgroundResource(R.drawable.piece_bg_white);
+                        Resources res = this.getResources();
+                        pieceImage.setImageResource(res.getIdentifier(chessboard.boardPiece[r][c].getImageName(), "drawable", this.getPackageName()));
+                        pieceImage.setRotation(0);
+                    } else if (chessboard.boardPiece[r][c].getTypeInt() == -1) {
+                        pieceImage.setBackgroundResource(R.drawable.piece_bg_black);
+                        Resources res = this.getResources();
+                        pieceImage.setImageResource(res.getIdentifier(chessboard.boardPiece[r][c].getImageName(), "drawable", this.getPackageName()));
+                        pieceImage.setRotation(180);
+                    } else {
+                        pieceImage.setImageResource(0);
+                        pieceImage.setBackgroundResource(0);
+                    }
+                }
             }
         }
     }
@@ -121,23 +241,6 @@ public class GameActivity extends AppCompatActivity {
                 child.setOnTouchListener(cellOnTouch);
                 gl_cellBoard.addView(child);
 
-            }
-        }
-    }
-
-    private void initPieceBoard() {
-        for (int r = 0; r < 6; r++) {
-            for (int c = 0; c < 6; c++) {
-                AppCompatImageView emptyPieceImage = new AppCompatImageView(getBaseContext());
-                GridLayout.LayoutParams emptyPieceImage_Param = new GridLayout.LayoutParams();
-                emptyPieceImage_Param.width = 180;
-                emptyPieceImage_Param.height = 180;
-                emptyPieceImage_Param.columnSpec = GridLayout.spec(c, 1, 1f);
-                emptyPieceImage_Param.rowSpec = GridLayout.spec(5 - r, 1, 1f);
-                emptyPieceImage.setLayoutParams(emptyPieceImage_Param);
-                emptyPieceImage.setPadding(20, 20, 20, 20);
-                emptyPieceImage.setTag("000");
-                gl_pieceBoard.addView(emptyPieceImage);
             }
         }
     }
@@ -179,6 +282,228 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    private void refreshAction() {
+        if (moveIndex[0]) {
+            viewIsEnabled((ImageView) findViewById(R.id.iv_move_white), true);
+            findViewById(R.id.tv_move_white).setClickable(true);
+        } else {
+            viewIsEnabled((ImageView) findViewById(R.id.iv_move_white), false);
+            findViewById(R.id.tv_move_white).setClickable(false);
+        }
+        if (attackIndex[0]) {
+            viewIsEnabled((ImageView) findViewById(R.id.iv_attack_white), true);
+            findViewById(tv_attack_white).setClickable(true);
+        } else {
+            viewIsEnabled((ImageView) findViewById(R.id.iv_attack_white), false);
+            findViewById(tv_attack_white).setClickable(false);
+        }
+        if (moveIndex[1]) {
+            viewIsEnabled((ImageView) findViewById(R.id.iv_move_black), true);
+            findViewById(R.id.tv_move_black).setClickable(true);
+        } else {
+            viewIsEnabled((ImageView) findViewById(R.id.iv_move_black), false);
+            findViewById(R.id.tv_move_black).setClickable(false);
+        }
+        if (attackIndex[1]) {
+            viewIsEnabled((ImageView) findViewById(R.id.iv_attack_black), true);
+            findViewById(R.id.tv_attack_black).setClickable(true);
+        } else {
+            viewIsEnabled((ImageView) findViewById(R.id.iv_attack_black), false);
+            findViewById(R.id.tv_attack_black).setClickable(false);
+        }
+
+    }
+
+    private void viewIsEnabled(ImageView imageview, boolean enableIndex) {
+        if (enableIndex) {
+            imageview.setClickable(true);
+            imageview.clearColorFilter();
+        } else {
+            imageview.setClickable(false);
+            ColorMatrix matrix = new ColorMatrix();
+            matrix.setSaturation(0);
+            imageview.setColorFilter(new ColorMatrixColorFilter(matrix));
+        }
+    }
+
+    private void refreshPieceInfo(boolean index, int cellX, int cellY) {
+
+        if (index) {
+            if (chessboard.movePlayerInt == 1) {
+                tv_vitality_white.setText("" + chessboard.boardPiece[cellX][cellY].vitality + "/" + chessboard.boardPiece[cellX][cellY].getInitVitality());
+//                move range
+                tv_moveRange_white.setText("" + chessboard.boardPiece[cellX][cellY].getMoveRange());
+//                move type
+                switch (chessboard.boardPiece[cellX][cellY].getMoveType()) {
+                    case "flight": {
+                        tv_moveType_white.setText("Flight");
+                        break;
+                    }
+                    case "walk": {
+                        tv_moveType_white.setText("Walk");
+                        break;
+                    }
+                    default:
+                        tv_moveType_white.setText("/");
+                }
+//                move Directions
+                switch (chessboard.boardPiece[cellX][cellY].getMoveDirections()) {
+                    case "+": {
+                        tv_moveDirections_white.setText("H+V");
+                        break;
+                    }
+                    case "*": {
+                        tv_moveDirections_white.setText("Any");
+                        break;
+                    }
+                    default:
+                        tv_moveDirections_white.setText("/");
+                }
+//                attack range
+                if (chessboard.boardPiece[cellX][cellY].getAttackRange() == 0) {
+                    tv_attackRange_white.setText("N.A.");
+                } else {
+                    tv_attackRange_white.setText("" + chessboard.boardPiece[cellX][cellY].getAttackRange());
+                }
+//                attack Strength
+                tv_attackStrength_white.setText("" + chessboard.boardPiece[cellX][cellY].getAttackStrength());
+//                attack direcions
+                switch (chessboard.boardPiece[cellX][cellY].getAttackDirections()) {
+                    case "+": {
+                        tv_attackDirections_white.setText("H+V");
+                        break;
+                    }
+                    case "x": {
+                        tv_attackDirections_white.setText("Diag");
+                        break;
+                    }
+                    case "": {
+                        tv_attackDirections_white.setText("N.A.");
+                        break;
+                    }
+                    default:
+                        tv_attackDirections_white.setText("/");
+                }
+            } else {
+                tv_vitality_black.setText("" + chessboard.boardPiece[cellX][cellY].vitality + "/" + chessboard.boardPiece[cellX][cellY].getInitVitality());
+//                move range
+                tv_moveRange_black.setText("" + chessboard.boardPiece[cellX][cellY].getMoveRange());
+//                move type
+                switch (chessboard.boardPiece[cellX][cellY].getMoveType()) {
+                    case "flight": {
+                        tv_moveType_black.setText("Flight");
+                        break;
+                    }
+                    case "walk": {
+                        tv_moveType_black.setText("Walk");
+                        break;
+                    }
+                    default:
+                        tv_moveType_black.setText("/");
+                }
+//                move Directions
+                switch (chessboard.boardPiece[cellX][cellY].getMoveDirections()) {
+                    case "+": {
+                        tv_moveDirections_black.setText("H+V");
+                        break;
+                    }
+                    case "*": {
+                        tv_moveDirections_black.setText("Any");
+                        break;
+                    }
+                    default:
+                        tv_moveDirections_black.setText("/");
+                }
+//                attack range
+                if (chessboard.boardPiece[cellX][cellY].getAttackRange() == 0) {
+                    tv_attackRange_black.setText("N.A.");
+                } else {
+                    tv_attackRange_black.setText("" + chessboard.boardPiece[cellX][cellY].getAttackRange());
+                }
+//                attack Strength
+                tv_attackStrength_black.setText("" + chessboard.boardPiece[cellX][cellY].getAttackStrength());
+//                attack direcions
+                switch (chessboard.boardPiece[cellX][cellY].getAttackDirections()) {
+                    case "+": {
+                        tv_attackDirections_black.setText("H+V");
+                        break;
+                    }
+                    case "x": {
+                        tv_attackDirections_black.setText("Diag");
+                        break;
+                    }
+                    case "": {
+                        tv_attackDirections_black.setText("N.A.");
+                        break;
+                    }
+                    default:
+                        tv_attackDirections_black.setText("/");
+                }
+            }
+        } else {
+            tv_vitality_white.setText("0/0");
+            tv_moveRange_white.setText("/");
+            tv_moveType_white.setText("/");
+            tv_moveDirections_white.setText("/");
+            tv_attackRange_white.setText("/");
+            tv_attackStrength_white.setText("/");
+            tv_attackDirections_white.setText("/");
+            tv_vitality_black.setText("0/0");
+            tv_moveRange_black.setText("/");
+            tv_moveType_black.setText("/");
+            tv_moveDirections_black.setText("/");
+            tv_attackRange_black.setText("/");
+            tv_attackStrength_black.setText("/");
+            tv_attackDirections_black.setText("/");
+            ColorMatrix matrix = new ColorMatrix();
+            matrix.setSaturation(0);
+            ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+            if (chessboard.movePlayerInt == 1) {
+                for (int i = 0; i < rl_vitality_black.getChildCount(); i++) {
+                    if (rl_vitality_white.getChildAt(i) instanceof ImageView) {
+                        ((ImageView) rl_vitality_black.getChildAt(i)).setColorFilter(filter);
+                        ((ImageView) rl_vitality_white.getChildAt(i)).clearColorFilter();
+                    }
+                }
+                for (int i = 0; i < gl_details_black.getChildCount(); i++) {
+                    if (gl_details_black.getChildAt(i) instanceof ImageView) {
+                        ((ImageView) gl_details_black.getChildAt(i)).setColorFilter(filter);
+                        ((ImageView) gl_details_white.getChildAt(i)).clearColorFilter();
+                    }
+                }
+            } else {
+                for (int i = 0; i < rl_vitality_white.getChildCount(); i++) {
+                    if (rl_vitality_white.getChildAt(i) instanceof ImageView) {
+                        ((ImageView) rl_vitality_white.getChildAt(i)).setColorFilter(filter);
+                        ((ImageView) rl_vitality_white.getChildAt(i)).clearColorFilter();
+                    }
+                }
+                for (int i = 0; i < gl_details_white.getChildCount(); i++) {
+                    if (gl_details_white.getChildAt(i) instanceof ImageView) {
+                        ((ImageView) gl_details_white.getChildAt(i)).setColorFilter(filter);
+                        ((ImageView) gl_details_black.getChildAt(i)).clearColorFilter();
+                    }
+                }
+            }
+        }
+    }
+
+    private void refreshScoreTime() {
+        if (chessboard.movePlayerInt == 1) {
+
+            timeWhenStoppedBlack= SystemClock.elapsedRealtime() - chronometer_black.getBase();
+            chronometer_black.stop();
+
+            chronometer_white.setBase(SystemClock.elapsedRealtime() - timeWhenStoppedWhite);
+            chronometer_white.start();
+        } else {
+            timeWhenStoppedWhite = SystemClock.elapsedRealtime() - chronometer_white.getBase();
+            chronometer_white.stop();
+
+            chronometer_black.setBase(SystemClock.elapsedRealtime() - timeWhenStoppedBlack);
+            chronometer_black.start();
+        }
+    }
 
     private View.OnClickListener actionOnClick = new View.OnClickListener() {
         @Override
@@ -237,13 +562,17 @@ public class GameActivity extends AppCompatActivity {
             int cellY = Integer.parseInt(v.getTag().toString().substring(5, 6));
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN: {
+
                     if (chessboard.boardPiece[cellX][cellY].getTypeInt() == chessboard.movePlayerInt) {
                         animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.touch_down);
                         gl_pieceBoard.getChildAt(6 * cellX + cellY).startAnimation(animation);
                     }
+
                     break;
                 }
                 case MotionEvent.ACTION_UP: {
+                    refreshPieceInfo(true, cellX, cellY);
+
                     if (chessboard.boardPiece[cellX][cellY].getTypeInt() == chessboard.movePlayerInt) {
                         animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.touch_up);
                         gl_pieceBoard.getChildAt(6 * cellX + cellY).startAnimation(animation);
@@ -267,6 +596,8 @@ public class GameActivity extends AppCompatActivity {
                                 refreshAction();
                                 refreshPieceBoard();
                                 refreshBoarderBoard();
+                                refreshPieceInfo(false,0,0);
+                                refreshScoreTime();
                             } else {
                                 fromX = cellX;
                                 fromY = cellY;
@@ -332,76 +663,6 @@ public class GameActivity extends AppCompatActivity {
         }
     };
 
-    private void refreshAction() {
-        if (moveIndex[0]) {
-            viewIsEnabled((ImageView) findViewById(R.id.iv_move_white), true);
-            findViewById(R.id.tv_move_white).setClickable(true);
-        } else {
-            viewIsEnabled((ImageView) findViewById(R.id.iv_move_white), false);
-            findViewById(R.id.tv_move_white).setClickable(false);
-        }
-        if (attackIndex[0]) {
-            viewIsEnabled((ImageView) findViewById(R.id.iv_attack_white), true);
-            findViewById(R.id.tv_attack_white).setClickable(true);
-        } else {
-            viewIsEnabled((ImageView) findViewById(R.id.iv_attack_white), false);
-            findViewById(R.id.tv_attack_white).setClickable(false);
-        }
-        if (moveIndex[1]) {
-            viewIsEnabled((ImageView) findViewById(R.id.iv_move_black), true);
-            findViewById(R.id.tv_move_black).setClickable(true);
-        } else {
-            viewIsEnabled((ImageView) findViewById(R.id.iv_move_black), false);
-            findViewById(R.id.tv_move_black).setClickable(false);
-        }
-        if (attackIndex[1]) {
-            viewIsEnabled((ImageView) findViewById(R.id.iv_attack_black), true);
-            findViewById(R.id.tv_attack_black).setClickable(true);
-        } else {
-            viewIsEnabled((ImageView) findViewById(R.id.iv_attack_black), false);
-            findViewById(R.id.tv_attack_black).setClickable(false);
-        }
-
-    }
-
-    private void viewIsEnabled(ImageView imageview, boolean enableIndex) {
-        if (enableIndex) {
-            imageview.setClickable(true);
-            imageview.clearColorFilter();
-        } else {
-            imageview.setClickable(false);
-            ColorMatrix matrix = new ColorMatrix();
-            matrix.setSaturation(0);
-            imageview.setColorFilter(new ColorMatrixColorFilter(matrix));
-
-        }
-    }
-
-
-    private void refreshPieceBoard() {
-        for (int r = 0; r < 6; r++) {
-            for (int c = 0; c < 6; c++) {
-                AppCompatImageView pieceImage = (AppCompatImageView) gl_pieceBoard.getChildAt(c + 6 * r);
-                if (!pieceImage.getTag().toString().substring(0, 1).equals(chessboard.boardPiece[r][c].getType())) {
-                    pieceImage.setTag(chessboard.boardPiece[r][c].getType() + r + c);
-                    if (chessboard.boardPiece[r][c].getTypeInt() == 1) {
-                        pieceImage.setBackgroundResource(R.drawable.piece_bg_white);
-                        Resources res = this.getResources();
-                        pieceImage.setImageResource(res.getIdentifier(chessboard.boardPiece[r][c].getImageName(), "drawable", this.getPackageName()));
-                        pieceImage.setRotation(0);
-                    } else if (chessboard.boardPiece[r][c].getTypeInt() == -1) {
-                        pieceImage.setBackgroundResource(R.drawable.piece_bg_black);
-                        Resources res = this.getResources();
-                        pieceImage.setImageResource(res.getIdentifier(chessboard.boardPiece[r][c].getImageName(), "drawable", this.getPackageName()));
-                        pieceImage.setRotation(180);
-                    } else {
-                        pieceImage.setImageResource(0);
-                        pieceImage.setBackgroundResource(0);
-                    }
-                }
-            }
-        }
-    }
 }
 
 

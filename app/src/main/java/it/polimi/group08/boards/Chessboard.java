@@ -18,11 +18,13 @@ import it.polimi.group08.pieces.Piece;
  */
 
 public class Chessboard {
-    private GlobalVariables gV = new GlobalVariables();
+    public GlobalVariables gV = new GlobalVariables();
     private Piece emptyPiece = gV.piece(0, 0);
     private int turnsNum;
     public int movePlayerInt;
-
+    private int movePlayerXInt;
+    public int[] playerScore = new int[2];
+    private int scoreTmp = 0;
     public Piece[][] boardPiece;
     public Piece[][] playerPiece;
 
@@ -39,6 +41,7 @@ public class Chessboard {
 //        initializing parameter
         turnsNum = 1;
         movePlayerInt = 1;
+        movePlayerXInt = 0;
         boardTypeStr = "" +
                 "000000" +
                 "GK00sa" +
@@ -82,10 +85,12 @@ public class Chessboard {
         switch (m) {
             case "W": {
                 movePlayerInt = 1;
+                movePlayerXInt = 0;
                 break;
             }
             case "B": {
                 movePlayerInt = -1;
+                movePlayerXInt = 1;
                 break;
             }
             default:
@@ -152,10 +157,10 @@ public class Chessboard {
     }
 
     private void refreshBoardStr() {
+        turnsNum++;
         boardStr = "";
         boardTypeStr = "";
         vitalityStr = "";
-
 
         if (boardPiece[frozenPiece[0][0]][frozenPiece[0][1]].getTypeInt() != 1) {
             frozenPiece[0][0] = 0;
@@ -192,6 +197,7 @@ public class Chessboard {
             }
         }
         movePlayerInt *= -1;
+        movePlayerXInt = (int) (0.5 + movePlayerInt * (-0.5));
 
         if (movePlayerInt == 1) boardStr += "W";
         else boardStr += "B";
@@ -202,14 +208,15 @@ public class Chessboard {
                 + vitalityStr
                 + frozenPieceStr
                 + unusedSpells;
+        refreshResultStr(movePlayerInt);
     }
 
     public String getBoardStr() {
-        setResultStr(movePlayerInt);
+        refreshResultStr(movePlayerInt);
         return boardStr + resultStr;
     }
 
-    private void setResultStr(int movePlayerInt) {
+    private void refreshResultStr(int movePlayerInt) {
         resultStr = "";
         int[] specialCellNum = new int[2];
         for (Object str : gV.specialCellsSet()) {
@@ -276,52 +283,57 @@ public class Chessboard {
         switch (action) {
             case "M": {
                 Move mov = new Move();
-                print();
+                refreshScoreTmp(action, fromX, fromY, toX, toY);
                 if (mov.isMoved(movePlayerInt, boardPiece, fromX, fromY, toX, toY, emptyPiece)) {
                     refreshBoardStr();
+                    playerScore[movePlayerXInt] += scoreTmp;
                     index = true;
                 }
-                print();
                 break;
             }
             case "A": {
                 Attack atk = new Attack();
+                refreshScoreTmp(action, fromX, fromY, toX, toY);
                 if (atk.isAttacked(movePlayerInt, boardPiece, fromX, fromY, toX, toY, emptyPiece)) {
                     refreshBoardStr();
+                    playerScore[movePlayerXInt] += scoreTmp;
                     index = true;
                 }
-                print();
                 break;
             }
             case "H": {
                 Heal hea = new Heal();
+                refreshScoreTmp(action, fromX, fromY, toX, toY);
                 if (hea.isHealed(movePlayerInt, boardPiece, fromX, fromY, emptyPiece)) {
                     refreshBoardStr();
+                    playerScore[movePlayerXInt] += scoreTmp;
                     index = true;
                 }
-                print();
                 break;
             }
             case "T": {
                 Teleport tel = new Teleport();
+                refreshScoreTmp(action, fromX, fromY, toX, toY);
                 if (tel.isTeleported(movePlayerInt, boardPiece, fromX, fromY, toX, toY, emptyPiece)) {
                     refreshBoardStr();
+                    playerScore[movePlayerXInt] += scoreTmp;
                     index = true;
                 }
-                print();
                 break;
             }
             case "R": {
                 Revive rev = new Revive();
+                refreshScoreTmp(action, fromX, fromY, toX, toY);
                 if (rev.isRevived(movePlayerInt, playerPiece, boardPiece, fromX, fromY, emptyPiece)) {
                     refreshBoardStr();
+                    playerScore[movePlayerXInt] += scoreTmp;
                     index = true;
                 }
-                print();
                 break;
             }
             case "F": {
                 Freeze fre = new Freeze();
+                refreshScoreTmp(action, fromX, fromY, toX, toY);
                 if (fre.isFreezed(movePlayerInt, boardPiece, fromX, fromY, emptyPiece)) {
                     if (movePlayerInt == 1) {
                         frozenPiece[1][0] = fromX;
@@ -333,9 +345,9 @@ public class Chessboard {
                         frozenPiece[0][2] = 3;
                     }
                     refreshBoardStr();
+                    playerScore[movePlayerXInt] += scoreTmp;
                     index = true;
                 }
-                print();
                 break;
             }
             default:
@@ -344,6 +356,45 @@ public class Chessboard {
         if (index) System.out.println("INFO:<The action is executed successfully!>");
         else System.out.println("ERROR:<The action is not executed!>");
         return index;
+    }
+
+    public void refreshScoreTmp(String act, int fX, int fY, int tX, int tY) {
+        scoreTmp = 0;
+        switch (act) {
+            case "M": {
+                if (boardPiece[tX][tY].getTypeInt() != 0) {
+                    scoreTmp = (boardPiece[fX][fY].getInitVitality() + boardPiece[tX][tY].getInitVitality()) * 9;
+                }
+                break;
+            }
+            case "A": {
+                scoreTmp = (boardPiece[fX][fY].getInitVitality() + boardPiece[tX][tY].vitality) * 10;
+                break;
+            }
+            case "H": {
+                scoreTmp = boardPiece[fX][fY].vitality * 15;
+                break;
+            }
+            case "T": {
+                if (boardPiece[tX][tY].getTypeInt() != 0) {
+                    scoreTmp = boardPiece[fX][fY].getInitVitality() + boardPiece[tX][tY].getInitVitality() * 6;
+                }
+                break;
+            }
+            case "R": {
+                if (movePlayerInt == 1) {
+                    scoreTmp = playerPiece[0][2].vitality * 3;
+                } else {
+                    scoreTmp = playerPiece[1][2].vitality * 3;
+                }
+                break;
+            }
+            case "F": {
+                scoreTmp = 100 - boardPiece[fX][fY].vitality * 10;
+                break;
+            }
+
+        }
     }
 
     public Set getAttackCells(int x, int y) {
@@ -355,6 +406,24 @@ public class Chessboard {
         Move mov = new Move();
         return mov.getAvailCells(boardPiece, x, y);
 
+    }
+
+    public int[] getPlayerScore() {
+        if (resultStr.length() != 0) {
+            for (int i = 0; i < 2; i++) {
+                System.out.print("jin");
+                if (playerPiece[i][2].state.equals("n")) {
+                    playerScore[i] += 500;
+                }
+                for (int j = 0; j < 4; j++) {
+                    if (!playerPiece[i][2].spells.substring(i, i + 1).equals("0")) {
+                        playerScore[i] += 100;
+                    }
+                }
+            }
+        }
+
+        return playerScore;
     }
 
     public void print() {

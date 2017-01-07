@@ -80,6 +80,10 @@ public class Piece {
         vitality = initialVitality;
     }
 
+    public int getInitVitality() {
+        return initialVitality;
+    }
+
     public int getInitPositionX() {
         return initPositionX;
     }
