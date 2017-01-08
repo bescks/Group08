@@ -22,7 +22,7 @@ public class Chessboard {
     private Piece emptyPiece = gV.piece(0, 0);
     private int turnsNum;
     public int movePlayerInt;
-    private int movePlayerXInt;
+    public int movePlayerXInt;
     public int[] playerScore = new int[2];
     private int scoreTmp = 0;
     public Piece[][] boardPiece;
@@ -54,7 +54,7 @@ public class Chessboard {
         frozenPiece[0][2] = 0;
         frozenPiece[1][2] = 0;
         frozenPieceStr = "000000";
-        setFrozenPieceStr();
+        refreshFrozenPieceStr();
 
         unusedSpells = "FHRTFHRT";
         //        initializing boardPiece and playerPiece
@@ -189,7 +189,7 @@ public class Chessboard {
                 }
             }
         }
-        setFrozenPieceStr();
+        refreshFrozenPieceStr();
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 boardTypeStr += boardPiece[j][i].getType();
@@ -208,15 +208,27 @@ public class Chessboard {
                 + vitalityStr
                 + frozenPieceStr
                 + unusedSpells;
-        refreshResultStr(movePlayerInt);
+        refreshResultStr();
     }
 
-    public String getBoardStr() {
-        refreshResultStr(movePlayerInt);
-        return boardStr + resultStr;
+    private void refreshFrozenPieceStr() {
+        if (frozenPiece[0][2] > 0) {
+            frozenPieceStr = "" + (frozenPiece[0][0] + 1) + (frozenPiece[0][1] + 1) + frozenPiece[0][2] + frozenPieceStr.substring(3, 6);
+        } else {
+            frozenPiece[0][0] = 0;
+            frozenPiece[0][1] = 0;
+            frozenPieceStr = "000" + frozenPieceStr.substring(3, 6);
+        }
+        if (frozenPiece[1][2] > 0) {
+            frozenPieceStr = frozenPieceStr.substring(0, 3) + (frozenPiece[1][0] + 1) + (frozenPiece[1][1] + 1) + frozenPiece[1][2];
+        } else {
+            frozenPiece[1][0] = 0;
+            frozenPiece[1][1] = 0;
+            frozenPieceStr = frozenPieceStr.substring(0, 3) + "000";
+        }
     }
 
-    private void refreshResultStr(int movePlayerInt) {
+    private void refreshResultStr() {
         resultStr = "";
         int[] specialCellNum = new int[2];
         for (Object str : gV.specialCellsSet()) {
@@ -253,21 +265,8 @@ public class Chessboard {
         }
     }
 
-    private void setFrozenPieceStr() {
-        if (frozenPiece[0][2] > 0) {
-            frozenPieceStr = "" + (frozenPiece[0][0] + 1) + (frozenPiece[0][1] + 1) + frozenPiece[0][2] + frozenPieceStr.substring(3, 6);
-        } else {
-            frozenPiece[0][0] = 0;
-            frozenPiece[0][1] = 0;
-            frozenPieceStr = "000" + frozenPieceStr.substring(3, 6);
-        }
-        if (frozenPiece[1][2] > 0) {
-            frozenPieceStr = frozenPieceStr.substring(0, 3) + (frozenPiece[1][0] + 1) + (frozenPiece[1][1] + 1) + frozenPiece[1][2];
-        } else {
-            frozenPiece[1][0] = 0;
-            frozenPiece[1][1] = 0;
-            frozenPieceStr = frozenPieceStr.substring(0, 3) + "000";
-        }
+    public String getBoardStr() {
+        return boardStr + resultStr;
     }
 
     public boolean isAction(String actionStr) {
@@ -280,60 +279,46 @@ public class Chessboard {
         int fromY = Integer.parseInt(actionStr.substring(2, 3)) - 1;
         int toX = Integer.parseInt(actionStr.substring(3, 4)) - 1;
         int toY = Integer.parseInt(actionStr.substring(4, 5)) - 1;
+        print();
+        refreshScoreTmp(action, fromX, fromY, toX, toY);
         switch (action) {
             case "M": {
                 Move mov = new Move();
-                refreshScoreTmp(action, fromX, fromY, toX, toY);
                 if (mov.isMoved(movePlayerInt, boardPiece, fromX, fromY, toX, toY, emptyPiece)) {
-                    refreshBoardStr();
-                    playerScore[movePlayerXInt] += scoreTmp;
                     index = true;
                 }
                 break;
             }
             case "A": {
                 Attack atk = new Attack();
-                refreshScoreTmp(action, fromX, fromY, toX, toY);
                 if (atk.isAttacked(movePlayerInt, boardPiece, fromX, fromY, toX, toY, emptyPiece)) {
-                    refreshBoardStr();
-                    playerScore[movePlayerXInt] += scoreTmp;
                     index = true;
                 }
                 break;
             }
             case "H": {
                 Heal hea = new Heal();
-                refreshScoreTmp(action, fromX, fromY, toX, toY);
                 if (hea.isHealed(movePlayerInt, boardPiece, fromX, fromY, emptyPiece)) {
-                    refreshBoardStr();
-                    playerScore[movePlayerXInt] += scoreTmp;
                     index = true;
                 }
                 break;
             }
             case "T": {
                 Teleport tel = new Teleport();
-                refreshScoreTmp(action, fromX, fromY, toX, toY);
                 if (tel.isTeleported(movePlayerInt, boardPiece, fromX, fromY, toX, toY, emptyPiece)) {
-                    refreshBoardStr();
-                    playerScore[movePlayerXInt] += scoreTmp;
                     index = true;
                 }
                 break;
             }
             case "R": {
                 Revive rev = new Revive();
-                refreshScoreTmp(action, fromX, fromY, toX, toY);
                 if (rev.isRevived(movePlayerInt, playerPiece, boardPiece, fromX, fromY, emptyPiece)) {
-                    refreshBoardStr();
-                    playerScore[movePlayerXInt] += scoreTmp;
                     index = true;
                 }
                 break;
             }
             case "F": {
                 Freeze fre = new Freeze();
-                refreshScoreTmp(action, fromX, fromY, toX, toY);
                 if (fre.isFreezed(movePlayerInt, boardPiece, fromX, fromY, emptyPiece)) {
                     if (movePlayerInt == 1) {
                         frozenPiece[1][0] = fromX;
@@ -344,8 +329,6 @@ public class Chessboard {
                         frozenPiece[0][1] = fromY;
                         frozenPiece[0][2] = 3;
                     }
-                    refreshBoardStr();
-                    playerScore[movePlayerXInt] += scoreTmp;
                     index = true;
                 }
                 break;
@@ -353,12 +336,17 @@ public class Chessboard {
             default:
                 System.out.println("ERROR:<The action is invalid!>");
         }
-        if (index) System.out.println("INFO:<The action is executed successfully!>");
-        else System.out.println("ERROR:<The action is not executed!>");
+        if (index) {
+            System.out.println("INFO:<The action is executed successfully!>");
+            playerScore[movePlayerXInt] += scoreTmp;
+            refreshBoardStr();
+            refreshPlayerScore();
+        } else System.out.println("ERROR:<The action is not executed!>");
+        print();
         return index;
     }
 
-    public void refreshScoreTmp(String act, int fX, int fY, int tX, int tY) {
+    private void refreshScoreTmp(String act, int fX, int fY, int tX, int tY) {
         scoreTmp = 0;
         switch (act) {
             case "M": {
@@ -397,21 +385,9 @@ public class Chessboard {
         }
     }
 
-    public Set getAttackCells(int x, int y) {
-        Attack atk = new Attack();
-        return atk.getAvailCells(boardPiece, x, y);
-    }
-
-    public Set getMoveCells(int x, int y) {
-        Move mov = new Move();
-        return mov.getAvailCells(boardPiece, x, y);
-
-    }
-
-    public int[] getPlayerScore() {
+    private void refreshPlayerScore() {
         if (resultStr.length() != 0) {
             for (int i = 0; i < 2; i++) {
-                System.out.print("jin");
                 if (playerPiece[i][2].state.equals("n")) {
                     playerScore[i] += 500;
                 }
@@ -422,8 +398,17 @@ public class Chessboard {
                 }
             }
         }
+    }
 
-        return playerScore;
+    public Set getAttackCells(int x, int y) {
+        Attack atk = new Attack();
+        return atk.getAvailCells(boardPiece, x, y);
+    }
+
+    public Set getMoveCells(int x, int y) {
+        Move mov = new Move();
+        return mov.getAvailCells(boardPiece, x, y);
+
     }
 
     public void print() {

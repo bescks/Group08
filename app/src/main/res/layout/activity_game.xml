@@ -53,7 +53,7 @@
                     android:id="@+id/tv_score_black"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="25/16" />
+                    android:text="0/0" />
 
                 <ImageView
                     android:id="@+id/iv_timer_black"
@@ -64,7 +64,7 @@
 
                 <Chronometer
                     android:id="@+id/chronometer_black"
-                    android:layout_width="70dp"
+                    android:layout_width="80dp"
                     android:layout_height="match_parent"
                     android:layout_marginRight="0dp" />
             </LinearLayout>
@@ -258,7 +258,6 @@
 
                     <TextView
                         android:id="@+id/tv_attackRange1_black"
-                        android:layout_width="35dp"
                         android:layout_height="20dp"
                         android:layout_column="1"
                         android:layout_columnSpan="1"
@@ -268,7 +267,8 @@
                         android:gravity="left|center_vertical"
                         android:text="Attack Range"
                         android:textColor="@android:color/black"
-                        android:textSize="7sp" />
+                        android:textSize="7sp"
+                        android:layout_width="45dp" />
 
                     <TextView
                         android:id="@+id/tv_attackRange2_black"
@@ -296,7 +296,7 @@
 
                     <TextView
                         android:id="@+id/tv_attackStrength1_black"
-                        android:layout_width="45dp"
+                        android:layout_width="50dp"
                         android:layout_height="20dp"
                         android:layout_column="3"
                         android:layout_columnSpan="1"
@@ -304,7 +304,7 @@
                         android:layout_row="2"
                         android:layout_rowSpan="1"
                         android:gravity="left|center_vertical"
-                        android:text="Attack Type"
+                        android:text="Attack Strength"
                         android:textColor="@android:color/black"
                         android:textSize="7sp" />
 
@@ -373,28 +373,28 @@
                 android:rowCount="1">
 
                 <ImageView
-                    android:id="@+id/iv_heal_black"
+                    android:id="@+id/iv_freeze_black"
                     android:layout_width="45dp"
                     android:layout_height="50dp"
                     android:layout_column="0"
                     android:layout_columnSpan="1"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
-                    android:layout_weight="1"
-                    android:tag="Heal"
-                    app:srcCompat="@drawable/spell_heal"
+                    app:srcCompat="@drawable/spell_freeze"
+                    android:tag="Freeze"
                     android:padding="2dp" />
 
                 <ImageView
-                    android:id="@+id/iv_teleport_black"
+                    android:id="@+id/iv_heal_black"
                     android:layout_width="45dp"
                     android:layout_height="50dp"
                     android:layout_column="1"
                     android:layout_columnSpan="1"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
-                    android:tag="Teleport"
-                    app:srcCompat="@drawable/spell_teleport"
+                    android:layout_weight="1"
+                    android:tag="Heal"
+                    app:srcCompat="@drawable/spell_heal"
                     android:padding="2dp" />
 
                 <ImageView
@@ -410,76 +410,49 @@
                     android:padding="2dp" />
 
                 <ImageView
-                    android:id="@+id/iv_freeze_black"
+                    android:id="@+id/iv_teleport_black"
                     android:layout_width="45dp"
                     android:layout_height="50dp"
                     android:layout_column="3"
                     android:layout_columnSpan="1"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
-                    app:srcCompat="@drawable/spell_freeze"
-                    android:tag="Freeze"
+                    android:tag="Teleport"
+                    app:srcCompat="@drawable/spell_teleport"
                     android:padding="2dp" />
 
-                <ImageView
-                    android:id="@+id/iv_move_black"
-                    android:layout_width="90dp"
-                    android:layout_height="50dp"
-                    android:layout_column="4"
-                    android:layout_columnSpan="2"
-                    android:layout_row="0"
-                    android:layout_rowSpan="1"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="1dp"
-                    android:tag="move"
-                    app:srcCompat="@drawable/action_background_move" />
-
-                <TextView
-                    android:id="@+id/tv_move_black"
-                    android:layout_width="90dp"
-                    android:layout_height="50dp"
-                    android:layout_column="4"
-                    android:layout_columnSpan="2"
-                    android:layout_row="0"
-                    android:layout_rowSpan="1"
-                    android:gravity="center"
-                    android:paddingBottom="5dp"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="1dp"
-                    android:tag="move"
+                <Button
                     android:text="Move"
-                    android:textColor="@android:color/background_dark"
-                    android:textSize="10sp" />
-
-                <ImageView
-                    android:id="@+id/iv_attack_black"
-                    android:layout_width="90dp"
-                    android:layout_height="50dp"
-                    android:layout_column="6"
+                    android:layout_width="88dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/bn_move_black"
+                    android:layout_gravity="center"
+                    android:layout_column="4"
                     android:layout_columnSpan="2"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
-                    android:paddingLeft="1dp"
-                    android:paddingRight="5dp"
-                    android:tag="attack"
-                    app:srcCompat="@drawable/action_attack_background" />
-
-                <TextView
-                    android:id="@+id/tv_attack_black"
-                    android:layout_width="90dp"
-                    android:layout_height="50dp"
-                    android:layout_column="6"
-                    android:layout_columnSpan="2"
-                    android:layout_row="0"
-                    android:layout_rowSpan="1"
+                    android:background="@drawable/action_move_black"
+                    android:textSize="10sp"
                     android:gravity="center"
-                    android:paddingBottom="5dp"
-                    android:paddingLeft="1dp"
-                    android:paddingRight="5dp"
-                    android:tag="attack"
+                    android:paddingBottom="4dp"
+                    android:tag="Move" />
+
+                <Button
                     android:text="Attack"
-                    android:textColor="@android:color/background_dark"
-                    android:textSize="10sp" />
+                    android:layout_width="88dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/bn_attack_black"
+                    android:background="@drawable/action_attack_black"
+                    android:textSize="10sp"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:layout_column="6"
+                    android:layout_columnSpan="2"
+                    android:layout_row="0"
+                    android:layout_rowSpan="1"
+                    android:paddingBottom="4dp"
+                    android:tag="Attack" />
+
 
             </GridLayout>
 
@@ -501,28 +474,28 @@
                 android:rowCount="1">
 
                 <ImageView
-                    android:id="@+id/iv_heal_white"
+                    android:id="@+id/iv_freeze_white"
                     android:layout_width="45dp"
                     android:layout_height="50dp"
                     android:layout_column="0"
                     android:layout_columnSpan="1"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
-                    android:layout_weight="1"
-                    android:tag="Heal"
-                    app:srcCompat="@drawable/spell_heal"
+                    app:srcCompat="@drawable/spell_freeze"
+                    android:tag="Freeze"
                     android:padding="2dp" />
 
                 <ImageView
-                    android:id="@+id/iv_teleport_white"
+                    android:id="@+id/iv_heal_white"
                     android:layout_width="45dp"
                     android:layout_height="50dp"
                     android:layout_column="1"
                     android:layout_columnSpan="1"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
-                    android:tag="Teleport"
-                    app:srcCompat="@drawable/spell_teleport"
+                    android:layout_weight="1"
+                    android:tag="Heal"
+                    app:srcCompat="@drawable/spell_heal"
                     android:padding="2dp" />
 
                 <ImageView
@@ -538,76 +511,48 @@
                     android:padding="2dp" />
 
                 <ImageView
-                    android:id="@+id/iv_freeze_white"
+                    android:id="@+id/iv_teleport_white"
                     android:layout_width="45dp"
                     android:layout_height="50dp"
                     android:layout_column="3"
                     android:layout_columnSpan="1"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
-                    app:srcCompat="@drawable/spell_freeze"
-                    android:tag="Freeze"
+                    android:tag="Teleport"
+                    app:srcCompat="@drawable/spell_teleport"
                     android:padding="2dp" />
 
-                <ImageView
-                    android:id="@+id/iv_move_white"
-                    android:layout_width="90dp"
-                    android:layout_height="50dp"
-                    android:layout_column="4"
-                    android:layout_columnSpan="2"
-                    android:layout_row="0"
-                    android:layout_rowSpan="1"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="1dp"
-                    android:tag="move"
-                    app:srcCompat="@drawable/action_background_move" />
-
-                <TextView
-                    android:id="@+id/tv_move_white"
-                    android:layout_width="90dp"
-                    android:layout_height="50dp"
-                    android:layout_column="4"
-                    android:layout_columnSpan="2"
-                    android:layout_row="0"
-                    android:layout_rowSpan="1"
-                    android:gravity="center"
-                    android:paddingBottom="5dp"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="1dp"
-                    android:tag="move"
+                <Button
                     android:text="Move"
-                    android:textColor="@android:color/background_dark"
-                    android:textSize="10sp" />
-
-                <ImageView
-                    android:id="@+id/iv_attack_white"
-                    android:layout_width="90dp"
-                    android:layout_height="50dp"
-                    android:layout_column="6"
+                    android:layout_width="88dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/bn_move_white"
+                    android:layout_gravity="center"
+                    android:layout_column="4"
                     android:layout_columnSpan="2"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
-                    android:paddingLeft="1dp"
-                    android:paddingRight="5dp"
-                    android:tag="attack"
-                    app:srcCompat="@drawable/action_attack_background" />
-
-                <TextView
-                    android:id="@+id/tv_attack_white"
-                    android:layout_width="90dp"
-                    android:layout_height="50dp"
-                    android:layout_column="6"
-                    android:layout_columnSpan="2"
-                    android:layout_row="0"
-                    android:layout_rowSpan="1"
+                    android:background="@drawable/action_move_white"
+                    android:textSize="10sp"
                     android:gravity="center"
-                    android:paddingBottom="5dp"
-                    android:paddingLeft="1dp"
-                    android:paddingRight="5dp"
-                    android:tag="attack"
+                    android:paddingBottom="4dp"
+                    android:tag="Move" />
+
+                <Button
                     android:text="Attack"
-                    android:textColor="@android:color/background_dark"
-                    android:textSize="10sp" />
+                    android:layout_width="88dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/bn_attack_white"
+                    android:background="@drawable/action_attack_white"
+                    android:textSize="10sp"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:layout_column="6"
+                    android:layout_columnSpan="2"
+                    android:layout_row="0"
+                    android:layout_rowSpan="1"
+                    android:paddingBottom="4dp"
+                    android:tag="Attack" />
 
             </GridLayout>
 
@@ -831,7 +776,7 @@
 
                     <TextView
                         android:id="@+id/tv_attackStrength1_white"
-                        android:layout_width="45dp"
+                        android:layout_width="50dp"
                         android:layout_height="20dp"
                         android:layout_column="3"
                         android:layout_columnSpan="1"
@@ -839,7 +784,7 @@
                         android:layout_row="2"
                         android:layout_rowSpan="1"
                         android:gravity="left|center_vertical"
-                        android:text="Attack Type"
+                        android:text="Attack Strength"
                         android:textColor="@android:color/black"
                         android:textSize="7sp" />
 
@@ -920,7 +865,7 @@
                     android:id="@+id/tv_score_white"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="25/16" />
+                    android:text="0/0" />
 
                 <ImageView
                     android:id="@+id/iv_timer_white"
@@ -931,10 +876,9 @@
 
                 <Chronometer
                     android:id="@+id/chronometer_white"
-                    android:layout_width="70dp"
+                    android:layout_width="80dp"
                     android:layout_height="match_parent"
-                    android:layout_marginRight="0dp"
-                    android:layout_gravity="center" />
+                    android:layout_marginRight="0dp" />
             </LinearLayout>
 
         </LinearLayout>
