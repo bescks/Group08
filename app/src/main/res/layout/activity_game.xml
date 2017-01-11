@@ -5,7 +5,8 @@
     android:id="@+id/activity_game"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="it.polimi.group08.GameActivity">
+    tools:context="it.polimi.group08.GameActivity"
+    android:background="@drawable/background">
 
     <RelativeLayout
         android:id="@+id/rl_firstLayer"
@@ -19,7 +20,8 @@
             android:layout_width="match_parent"
             android:layout_height="360dp"
             android:columnCount="6"
-            android:rowCount="6">
+            android:rowCount="6"
+            android:background="#EEE2CC">
 
         </GridLayout>
     </RelativeLayout>
@@ -53,7 +55,8 @@
                     android:id="@+id/tv_score_black"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="0/0" />
+                    android:text="0/0"
+                    android:textColor="@android:color/white" />
 
                 <ImageView
                     android:id="@+id/iv_timer_black"
@@ -66,7 +69,8 @@
                     android:id="@+id/chronometer_black"
                     android:layout_width="80dp"
                     android:layout_height="match_parent"
-                    android:layout_marginRight="0dp" />
+                    android:layout_marginRight="0dp"
+                    android:textColor="@android:color/white" />
             </LinearLayout>
 
             <View
@@ -153,7 +157,7 @@
                         android:layout_rowSpan="1"
                         android:gravity="left|center_vertical"
                         android:text="Move Range"
-                        android:textColor="@android:color/black"
+                        android:textColor="@android:color/white"
                         android:textSize="7sp" />
 
                     <TextView
@@ -168,7 +172,8 @@
                         android:layout_rowSpan="1"
                         android:gravity="start"
                         android:text="3"
-                        android:textSize="10sp" />
+                        android:textSize="10sp"
+                        android:textColor="@android:color/white" />
 
                     <ImageView
                         android:id="@+id/iv_moveType_black"
@@ -191,7 +196,7 @@
                         android:layout_rowSpan="1"
                         android:gravity="left|center_vertical"
                         android:text="Move Type"
-                        android:textColor="@android:color/black"
+                        android:textColor="@android:color/white"
                         android:textSize="7sp" />
 
                     <TextView
@@ -206,7 +211,8 @@
                         android:layout_rowSpan="1"
                         android:gravity="start"
                         android:text="Walk"
-                        android:textSize="10sp" />
+                        android:textSize="10sp"
+                        android:textColor="@android:color/white" />
 
                     <ImageView
                         android:id="@+id/iv_moveDirections_black"
@@ -229,7 +235,7 @@
                         android:layout_rowSpan="1"
                         android:gravity="left|center_vertical"
                         android:text="Move Directions"
-                        android:textColor="@android:color/black"
+                        android:textColor="@android:color/white"
                         android:textSize="7sp" />
 
                     <TextView
@@ -244,7 +250,8 @@
                         android:layout_rowSpan="1"
                         android:gravity="start"
                         android:text="H + V"
-                        android:textSize="10sp" />
+                        android:textSize="10sp"
+                        android:textColor="@android:color/white" />
 
                     <ImageView
                         android:id="@+id/iv_attackRange_black"
@@ -266,7 +273,7 @@
                         android:layout_rowSpan="1"
                         android:gravity="left|center_vertical"
                         android:text="Attack Range"
-                        android:textColor="@android:color/black"
+                        android:textColor="@android:color/white"
                         android:textSize="7sp"
                         android:layout_width="45dp" />
 
@@ -282,7 +289,8 @@
                         android:layout_rowSpan="1"
                         android:gravity="start"
                         android:text="3"
-                        android:textSize="10sp" />
+                        android:textSize="10sp"
+                        android:textColor="@android:color/white" />
 
                     <ImageView
                         android:id="@+id/iv_attackStrength_black"
@@ -305,7 +313,7 @@
                         android:layout_rowSpan="1"
                         android:gravity="left|center_vertical"
                         android:text="Attack Strength"
-                        android:textColor="@android:color/black"
+                        android:textColor="@android:color/white"
                         android:textSize="7sp" />
 
                     <TextView
@@ -320,7 +328,8 @@
                         android:layout_rowSpan="1"
                         android:gravity="start"
                         android:text="Walk"
-                        android:textSize="10sp" />
+                        android:textSize="10sp"
+                        android:textColor="@android:color/white" />
 
                     <ImageView
                         android:id="@+id/iv_attackDirections_black"
@@ -343,7 +352,7 @@
                         android:layout_rowSpan="1"
                         android:gravity="left|center_vertical"
                         android:text="Attack Direcrions"
-                        android:textColor="@android:color/black"
+                        android:textColor="@android:color/white"
                         android:textSize="7sp" />
 
                     <TextView
@@ -358,7 +367,8 @@
                         android:layout_rowSpan="1"
                         android:gravity="start"
                         android:text="H + V"
-                        android:textSize="10sp" />
+                        android:textSize="10sp"
+                        android:textColor="@android:color/white" />
 
                 </GridLayout>
 
@@ -633,7 +643,7 @@
                         android:layout_rowSpan="1"
                         android:gravity="left|center_vertical"
                         android:text="Move Range"
-                        android:textColor="@android:color/black"
+                        android:textColor="@android:color/white"
                         android:textSize="7sp" />
 
                     <TextView
@@ -648,7 +658,8 @@
                         android:layout_rowSpan="1"
                         android:gravity="start"
                         android:text="3"
-                        android:textSize="10sp" />
+                        android:textSize="10sp"
+                        android:textColor="@android:color/white" />
 
                     <ImageView
                         android:id="@+id/iv_moveType_white"
@@ -671,7 +682,7 @@
                         android:layout_rowSpan="1"
                         android:gravity="left|center_vertical"
                         android:text="Move Type"
-                        android:textColor="@android:color/black"
+                        android:textColor="@android:color/white"
                         android:textSize="7sp" />
 
                     <TextView
@@ -686,7 +697,8 @@
                         android:layout_rowSpan="1"
                         android:gravity="start"
                         android:text="Walk"
-                        android:textSize="10sp" />
+                        android:textSize="10sp"
+                        android:textColor="@android:color/white" />
 
                     <ImageView
                         android:id="@+id/iv_moveDirections_white"
@@ -709,7 +721,7 @@
                         android:layout_rowSpan="1"
                         android:gravity="left|center_vertical"
                         android:text="Move Directions"
-                        android:textColor="@android:color/black"
+                        android:textColor="@android:color/white"
                         android:textSize="7sp" />
 
                     <TextView
@@ -724,7 +736,8 @@
                         android:layout_rowSpan="1"
                         android:gravity="start"
                         android:text="H + V"
-                        android:textSize="10sp" />
+                        android:textSize="10sp"
+                        android:textColor="@android:color/white" />
 
                     <ImageView
                         android:id="@+id/iv_attackRange_white"
@@ -762,7 +775,8 @@
                         android:layout_rowSpan="1"
                         android:gravity="start"
                         android:text="3"
-                        android:textSize="10sp" />
+                        android:textSize="10sp"
+                        android:textColor="@android:color/white" />
 
                     <ImageView
                         android:id="@+id/iv_attackStrength_white"
@@ -785,7 +799,7 @@
                         android:layout_rowSpan="1"
                         android:gravity="left|center_vertical"
                         android:text="Attack Strength"
-                        android:textColor="@android:color/black"
+                        android:textColor="@android:color/white"
                         android:textSize="7sp" />
 
                     <TextView
@@ -800,7 +814,8 @@
                         android:layout_rowSpan="1"
                         android:gravity="start"
                         android:text="Walk"
-                        android:textSize="10sp" />
+                        android:textSize="10sp"
+                        android:textColor="@android:color/white" />
 
                     <ImageView
                         android:id="@+id/iv_attackDirections_white"
@@ -823,7 +838,7 @@
                         android:layout_rowSpan="1"
                         android:gravity="left|center_vertical"
                         android:text="Attack Directions"
-                        android:textColor="@android:color/black"
+                        android:textColor="@android:color/white"
                         android:textSize="7sp" />
 
                     <TextView
@@ -838,7 +853,8 @@
                         android:layout_rowSpan="1"
                         android:gravity="start"
                         android:text="H + V"
-                        android:textSize="10sp" />
+                        android:textSize="10sp"
+                        android:textColor="@android:color/white" />
 
                 </GridLayout>
 
@@ -865,7 +881,8 @@
                     android:id="@+id/tv_score_white"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="0/0" />
+                    android:text="0/0"
+                    android:textColor="@android:color/white" />
 
                 <ImageView
                     android:id="@+id/iv_timer_white"
@@ -878,7 +895,8 @@
                     android:id="@+id/chronometer_white"
                     android:layout_width="80dp"
                     android:layout_height="match_parent"
-                    android:layout_marginRight="0dp" />
+                    android:layout_marginRight="0dp"
+                    android:textColor="@android:color/white" />
             </LinearLayout>
 
         </LinearLayout>
@@ -919,6 +937,13 @@
 
         </GridLayout>
 
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/rl_game_end">
 
     </RelativeLayout>
 

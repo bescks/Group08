@@ -22,7 +22,7 @@ public class Revive {
             System.out.println("ERROR:<Your mage is dead!>");
         } else if (!pieceMage.spells.substring(2, 3).equals("R")) {
             System.out.println("ERROR:<The revive spell has been casted!>");
-        } else if (revivedPiece.state.equals("n")) {
+        } else if (!revivedPiece.state.equals("d")) {
             System.out.println("ERROR:<The cannot choose a alive piece " + revivedPiece.getType() + " to revive!>");
         } else if (revivedPiece.getTypeInt() == 0) {
             System.out.println("ERROR:<Your cannot choose an empty " + revivedPiece.getType() + " piece to revive!>");

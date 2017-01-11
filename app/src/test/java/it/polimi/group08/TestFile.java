@@ -19,8 +19,6 @@ public class TestFile {
             chessboard.isAction(str.substring(67 + 5 * i, 72 + 5 * i));
         }
         System.out.println("*************************");
-        System.out.println(chessboard.getPlayerScore()[0]);
-        System.out.println(chessboard.getPlayerScore()[1]);
         return chessboard.getBoardStr();
 
 

@@ -2,8 +2,10 @@ package it.polimi.group08;
 
 
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +28,7 @@ import it.polimi.group08.boards.Chessboard;
 
 public class GameActivity extends AppCompatActivity {
     Chessboard chessboard = new Chessboard();
+    RelativeLayout rl_activity_game;
     GridLayout gl_cellBackground;
     GridLayout gl_pieceBoard;
     GridLayout gl_action_white;
@@ -37,7 +40,6 @@ public class GameActivity extends AppCompatActivity {
     RelativeLayout rl_vitality_black;
     GridLayout gl_details_black;
     RelativeLayout secondLayer;
-
 
     TextView tv_vitality_white;
     TextView tv_vitality_black;
@@ -83,6 +85,7 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        rl_activity_game = (RelativeLayout) findViewById(R.id.activity_game);
 //      initialize chessboard
         chessboard.initBoard();
 //       initialize parameters
@@ -136,9 +139,30 @@ public class GameActivity extends AppCompatActivity {
         chronometer_white = (Chronometer) findViewById(R.id.chronometer_white);
         chronometer_black = (Chronometer) findViewById(R.id.chronometer_black);
 
+
 //      er layer: initialize cellBoard
         gl_cellBoard = (GridLayout) findViewById(R.id.gl_cellBoard);
         initPieceBoard();
+//        chessboard.setBoardWithStr("W",
+//                "000000" +
+//                        "000000" +
+//                        "000000" +
+//                        "000000" +
+//                        "0000K0" +
+//                        "M0000k",
+//                "7120000000000000"
+//                , "000000",
+//                "F0RT0HRT");
+
+        chessboard.setBoardWithStr("W",
+                "000000" +
+                        "g00000" +
+                        "G00000" +
+                        "000000" +
+                        "m00000" +
+                        "M00000", "5777000000000000", "133123", "0HRTFHRT");
+
+
         refreshPieceBoard();
         initBoarderBoard();
         refreshBoarderBoard();
@@ -146,6 +170,30 @@ public class GameActivity extends AppCompatActivity {
         refreshSpells();
         refreshMoveAttack();
         refreshPieceInfo(false, 0, 0);
+
+        gameIsEnd("","",0,0);
+
+
+//        rl_waitLayout.setAlpha(0.3);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    synchronized (this) {
+                        wait(3000);
+                    }
+                } catch (InterruptedException ex) {
+                }
+
+                // TODO
+                //THESE TWO LINES ARE THE ONES I WANT TO RUN AFTER 3 SECONDS
+
+            }
+        };
+
+        thread.start();
+
+
         chronometer_white.start();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -551,6 +599,7 @@ public class GameActivity extends AppCompatActivity {
         if (gl_pieceBoard.getChildCount() > 36) {
             gl_pieceBoard.removeViews(36, gl_pieceBoard.getChildCount() - 36);
         }
+
         int cellX = 5 - Integer.parseInt(v.getTag().toString().substring(4, 5));
         int cellY = Integer.parseInt(v.getTag().toString().substring(5, 6));
         switch (event.getAction()) {
@@ -561,6 +610,7 @@ public class GameActivity extends AppCompatActivity {
                 if (chessboard.boardPiece[cellX][cellY].getTypeInt() == chessboard.movePlayerInt) {
                     animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.touch_down);
                     gl_pieceBoard.getChildAt(6 * cellX + cellY).startAnimation(animation);
+
                 }
                 break;
             }
@@ -588,8 +638,8 @@ public class GameActivity extends AppCompatActivity {
                                 if (chessboard.isAction(action + (fromX + 1) + (fromY + 1) + (cellX + 1) + (cellY + 1))) {
                                     actionIndex = true;
                                 } else {
-                                    fromX = cellX;
-                                    fromY = cellY;
+                                    moveIndex = false;
+                                    action = "";
                                 }
                             }
                             break;
@@ -599,8 +649,21 @@ public class GameActivity extends AppCompatActivity {
                                 if (chessboard.isAction(action + (fromX + 1) + (fromY + 1) + (cellX + 1) + (cellY + 1))) {
                                     actionIndex = true;
                                 } else {
-                                    fromX = cellX;
-                                    fromY = cellY;
+                                    actionIndex = false;
+                                    action = "";
+                                }
+                            }
+                            break;
+                        }
+                        case "F": {
+                            if (chessboard.isAction(action + (cellX + 1) + (cellY + 1) + 0 + 0)) {
+                                actionIndex = true;
+                            } else {
+                                action = "";
+                                if (chessboard.movePlayerInt == 1) {
+                                    gl_action_white.getChildAt(0).getAnimation().cancel();
+                                }else {
+                                    gl_action_black.getChildAt(0).getAnimation().cancel();
                                 }
                             }
                             break;
@@ -608,6 +671,26 @@ public class GameActivity extends AppCompatActivity {
                         case "H": {
                             if (chessboard.isAction(action + (cellX + 1) + (cellY + 1) + 0 + 0)) {
                                 actionIndex = true;
+                            } else {
+                                action = "";
+                                if (chessboard.movePlayerInt == 1) {
+                                    gl_action_white.getChildAt(1).getAnimation().cancel();
+                                }else {
+                                    gl_action_black.getChildAt(1).getAnimation().cancel();
+                                }
+                            }
+                            break;
+                        }
+                        case "R": {
+                            if (chessboard.isAction(action + (cellX + 1) + (cellY + 1) + 0 + 0)) {
+                                actionIndex = true;
+                            } else {
+                                action = "";
+                                if (chessboard.movePlayerInt == 1) {
+                                    gl_action_white.getChildAt(2).getAnimation().cancel();
+                                }else {
+                                    gl_action_black.getChildAt(2).getAnimation().cancel();
+                                }
                             }
                             break;
                         }
@@ -617,21 +700,18 @@ public class GameActivity extends AppCompatActivity {
                                     actionIndex = true;
                                 }
                             } else {
-                                fromX = cellX;
-                                fromY = cellY;
-                                teleportIndex = true;
+                                action = "";
+                                if (chessboard.movePlayerInt == 1) {
+                                    gl_action_white.getChildAt(3).getAnimation().cancel();
+                                }else {
+                                    gl_action_black.getChildAt(3).getAnimation().cancel();
+                                }
+
                             }
                             break;
                         }
-                        case "R": {
-                            break;
-                        }
-                        case "F": {
-                            if (chessboard.isAction(action + (cellX + 1) + (cellY + 1) + 0 + 0)) {
-                                actionIndex = true;
-                            }
-                            break;
-                        }
+
+
                     }
                     System.out.println(actionIndex);
                     if (actionIndex) {
@@ -641,8 +721,8 @@ public class GameActivity extends AppCompatActivity {
                         moveIndex = false;
                         teleportIndex = false;
                         actionIndex = false;
-                        System.out.print("zhixingle");
                         refreshPieceBoard();
+                        refreshBoarderBoard();
                         refreshSpells();
                         refreshMoveAttack();
                         refreshPieceInfo(false, 0, 0);
@@ -663,6 +743,10 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private boolean spellOnTouch(View v, MotionEvent event) {
+        moveIndex=false;
+        attackIndex=false;
+        action="";
+        refreshMoveAttack();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
                 if (gl_pieceBoard.getChildCount() > 36) {
@@ -695,6 +779,36 @@ public class GameActivity extends AppCompatActivity {
                     case "Revive": {
                         action = "R";
                         System.out.println("Action= R");
+                        int reviveX;
+                        int reviveY;
+                        for (int r = 0; r < 8; r++) {
+                            reviveX = chessboard.playerPiece[chessboard.movePlayerXInt][r].getInitPositionX();
+                            reviveY = chessboard.playerPiece[chessboard.movePlayerXInt][r].getInitPositionY();
+                            if (r != 2 && chessboard.playerPiece[chessboard.movePlayerXInt][r].state.equals("d")
+                                    && chessboard.boardPiece[reviveX][reviveY].getTypeInt() != chessboard.movePlayerInt) {
+                                AppCompatImageView revivePieceImage = new AppCompatImageView(getBaseContext());
+                                GridLayout.LayoutParams revivePieceImage_Param = new GridLayout.LayoutParams();
+                                revivePieceImage_Param.width = 180;
+                                revivePieceImage_Param.height = 180;
+                                revivePieceImage_Param.columnSpec = GridLayout.spec(reviveY, 1, 1f);
+                                revivePieceImage_Param.rowSpec = GridLayout.spec(5 - reviveX, 1, 1f);
+                                revivePieceImage.setLayoutParams(revivePieceImage_Param);
+                                revivePieceImage.setPadding(20, 20, 20, 20);
+                                Resources res = this.getResources();
+                                revivePieceImage.setImageResource(res.getIdentifier(chessboard.playerPiece[chessboard.movePlayerXInt][r].getImageName(), "drawable", this.getPackageName()));
+                                if (chessboard.movePlayerInt == 1) {
+                                    revivePieceImage.setBackgroundResource(R.drawable.piece_bg_white);
+                                } else {
+                                    revivePieceImage.setBackgroundResource(R.drawable.piece_bg_black);
+                                    revivePieceImage.setRotation(180);
+                                }
+                                ColorMatrix matrix = new ColorMatrix();
+                                matrix.setSaturation(0);
+                                ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+                                revivePieceImage.setColorFilter(filter);
+                                gl_pieceBoard.addView(revivePieceImage);
+                            }
+                        }
                         break;
                     }
                     case "Freeze": {
@@ -713,6 +827,7 @@ public class GameActivity extends AppCompatActivity {
                 break;
             }
         }
+
         return true;
     }
 
@@ -773,6 +888,47 @@ public class GameActivity extends AppCompatActivity {
             }
         }
         return false;
+    }
+
+    private void gameIsEnd(String whiteRes,String blackRes, int whiteScore,int blackScore ) {
+
+        RelativeLayout rl_game_end = (RelativeLayout) findViewById(R.id.rl_game_end);
+        rl_game_end.setBackgroundColor(Color.BLACK);
+        rl_game_end.setAlpha((float) 0.9);
+        rl_game_end.setClickable(true);
+
+        RelativeLayout.LayoutParams rl_game_end_white_Params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        rl_game_end_white_Params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        rl_game_end_white_Params.setMargins(0,1210,0,0);
+        TextView tv_end_white = new TextView(getBaseContext());
+        tv_end_white.setText("You lose!");
+        tv_end_white.setTextColor(Color.WHITE);
+        tv_end_white.setTypeface(Typeface.MONOSPACE);
+        tv_end_white.setTextSize(22);
+        tv_end_white.setLayoutParams(rl_game_end_white_Params);
+
+        RelativeLayout.LayoutParams rl_game_end_black_Params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        rl_game_end_black_Params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        rl_game_end_black_Params.setMargins(0,620,0,0);
+        TextView tv_end_black = new TextView(getBaseContext());
+        tv_end_black.setRotation(180);
+        tv_end_black.setText("You \nlose!");
+        tv_end_black.setTextColor(Color.WHITE);
+        tv_end_black.setTypeface(Typeface.MONOSPACE);
+        tv_end_black.setTextSize(22);
+        tv_end_black.setLayoutParams(rl_game_end_black_Params);
+
+
+
+
+
+
+
+        rl_activity_game.addView(tv_end_white);
+        rl_activity_game.addView(tv_end_black);
+        rl_game_end.startAnimation( AnimationUtils.loadAnimation(getApplicationContext(), R.anim.game_end));
+        tv_end_white.startAnimation( AnimationUtils.loadAnimation(getApplicationContext(), R.anim.game_end));
+        tv_end_black.startAnimation( AnimationUtils.loadAnimation(getApplicationContext(), R.anim.game_end));
     }
 
     private View.OnTouchListener moveAttackOnTouch = new View.OnTouchListener() {
