@@ -27,6 +27,7 @@ public class Piece {
     boolean twinIndex = false;
     public String spells = "";
     String imageName = "";
+    public boolean isNorImg = true;
 
     public Piece(int iV, int mR, String mD, String mT, int aR, int aS, String aD, String c, String t) {
 
@@ -146,4 +147,6 @@ public class Piece {
     public String getImageName() {
         return imageName;
     }
+
+
 }

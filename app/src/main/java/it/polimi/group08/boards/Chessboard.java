@@ -32,7 +32,7 @@ public class Chessboard {
     private String boardTypeStr;
     private String vitalityStr;
     private int[][] frozenPiece = new int[2][3];
-    private String frozenPieceStr;
+    public String frozenPieceStr;
 
     private String unusedSpells;
     public String resultStr;
@@ -281,6 +281,8 @@ public class Chessboard {
         int toY = Integer.parseInt(actionStr.substring(4, 5)) - 1;
         print();
         refreshScoreTmp(action, fromX, fromY, toX, toY);
+        print();
+        System.out.println(actionStr);
         switch (action) {
             case "M": {
                 Move mov = new Move();

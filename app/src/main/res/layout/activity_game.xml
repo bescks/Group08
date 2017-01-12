@@ -379,57 +379,76 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:columnCount="8"
-                android:rotation="180"
-                android:rowCount="1">
+                android:rowCount="1"
+                android:rotation="180">
 
-                <ImageView
+                <Button
+                    android:text="F"
+                    android:layout_width="43dp"
                     android:id="@+id/iv_freeze_black"
-                    android:layout_width="45dp"
-                    android:layout_height="50dp"
                     android:layout_column="0"
                     android:layout_columnSpan="1"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
-                    app:srcCompat="@drawable/spell_freeze"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:background="@drawable/spell_freeze_black"
+                    android:layout_height="43dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:tag="Freeze"
-                    android:padding="2dp" />
+                    android:layout_margin="1dp" />
 
-                <ImageView
+                <Button
+                    android:text="H"
+                    android:layout_width="43dp"
                     android:id="@+id/iv_heal_black"
-                    android:layout_width="45dp"
-                    android:layout_height="50dp"
                     android:layout_column="1"
                     android:layout_columnSpan="1"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
-                    android:layout_weight="1"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:background="@drawable/spell_heal_black"
+                    android:layout_height="43dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:tag="Heal"
-                    app:srcCompat="@drawable/spell_heal"
-                    android:padding="2dp" />
+                    android:layout_margin="1dp" />
 
-                <ImageView
+                <Button
+                    android:text="R"
+                    android:layout_width="43dp"
                     android:id="@+id/iv_revive_black"
-                    android:layout_width="45dp"
-                    android:layout_height="50dp"
                     android:layout_column="2"
                     android:layout_columnSpan="1"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
-                    app:srcCompat="@drawable/spell_revive"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:background="@drawable/spell_revive_black"
+                    android:layout_height="43dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:tag="Revive"
-                    android:padding="2dp" />
+                    android:layout_margin="1dp" />
 
-                <ImageView
+                <Button
+                    android:text="T"
+                    android:layout_width="43dp"
                     android:id="@+id/iv_teleport_black"
-                    android:layout_width="45dp"
-                    android:layout_height="50dp"
                     android:layout_column="3"
                     android:layout_columnSpan="1"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:background="@drawable/spell_teleport_black"
+                    android:layout_height="43dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:tag="Teleport"
-                    app:srcCompat="@drawable/spell_teleport"
-                    android:padding="2dp" />
+                    android:layout_margin="1dp" />
 
                 <Button
                     android:text="Move"
@@ -444,8 +463,9 @@
                     android:background="@drawable/action_move_black"
                     android:textSize="10sp"
                     android:gravity="center"
-                    android:paddingBottom="4dp"
-                    android:tag="Move" />
+                    android:tag="Move"
+                    android:paddingBottom="2dp"
+                    android:layout_margin="1dp" />
 
                 <Button
                     android:text="Attack"
@@ -460,9 +480,9 @@
                     android:layout_columnSpan="2"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
-                    android:paddingBottom="4dp"
-                    android:tag="Attack" />
-
+                    android:paddingBottom="2dp"
+                    android:tag="Attack"
+                    android:layout_margin="1dp" />
 
             </GridLayout>
 
@@ -483,54 +503,73 @@
                 android:columnCount="8"
                 android:rowCount="1">
 
-                <ImageView
+                <Button
+                    android:text="F"
+                    android:layout_width="43dp"
                     android:id="@+id/iv_freeze_white"
-                    android:layout_width="45dp"
-                    android:layout_height="50dp"
                     android:layout_column="0"
                     android:layout_columnSpan="1"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
-                    app:srcCompat="@drawable/spell_freeze"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:background="@drawable/spell_freeze_white"
+                    android:layout_height="43dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:tag="Freeze"
-                    android:padding="2dp" />
+                    android:layout_margin="1dp" />
 
-                <ImageView
+                <Button
+                    android:text="H"
+                    android:layout_width="43dp"
                     android:id="@+id/iv_heal_white"
-                    android:layout_width="45dp"
-                    android:layout_height="50dp"
                     android:layout_column="1"
                     android:layout_columnSpan="1"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
-                    android:layout_weight="1"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:background="@drawable/spell_heal_white"
+                    android:layout_height="43dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:tag="Heal"
-                    app:srcCompat="@drawable/spell_heal"
-                    android:padding="2dp" />
+                    android:layout_margin="1dp" />
 
-                <ImageView
+                <Button
+                    android:text="R"
+                    android:layout_width="43dp"
                     android:id="@+id/iv_revive_white"
-                    android:layout_width="45dp"
-                    android:layout_height="50dp"
                     android:layout_column="2"
                     android:layout_columnSpan="1"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
-                    app:srcCompat="@drawable/spell_revive"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:background="@drawable/spell_revive_white"
+                    android:layout_height="43dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:tag="Revive"
-                    android:padding="2dp" />
+                    android:layout_margin="1dp" />
 
-                <ImageView
+                <Button
+                    android:text="T"
+                    android:layout_width="43dp"
                     android:id="@+id/iv_teleport_white"
-                    android:layout_width="45dp"
-                    android:layout_height="50dp"
                     android:layout_column="3"
                     android:layout_columnSpan="1"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:background="@drawable/spell_teleport_white"
+                    android:layout_height="43dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:tag="Teleport"
-                    app:srcCompat="@drawable/spell_teleport"
-                    android:padding="2dp" />
+                    android:layout_margin="1dp" />
 
                 <Button
                     android:text="Move"
@@ -545,8 +584,9 @@
                     android:background="@drawable/action_move_white"
                     android:textSize="10sp"
                     android:gravity="center"
-                    android:paddingBottom="4dp"
-                    android:tag="Move" />
+                    android:tag="Move"
+                    android:paddingBottom="2dp"
+                    android:layout_margin="1dp" />
 
                 <Button
                     android:text="Attack"
@@ -561,8 +601,9 @@
                     android:layout_columnSpan="2"
                     android:layout_row="0"
                     android:layout_rowSpan="1"
-                    android:paddingBottom="4dp"
-                    android:tag="Attack" />
+                    android:paddingBottom="2dp"
+                    android:tag="Attack"
+                    android:layout_margin="1dp" />
 
             </GridLayout>
 
@@ -950,7 +991,10 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/rl_game_end">
+        android:id="@+id/rl_game_end"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="1dp">
 
     </RelativeLayout>
 

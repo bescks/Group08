@@ -1,11 +1,14 @@
 package it.polimi.group08;
 
 
+import android.content.Context;
 import android.content.res.Resources;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
@@ -76,13 +79,30 @@ public class GameActivity extends AppCompatActivity {
     boolean teleportIndex;
     boolean actionIndex;
 
+    boolean sfxIndex;
+
     int fromX;
     int fromY;
     String action = "";
     Animation animation;
 
+    MediaPlayer mp;
+
+    @Override
+    protected void onStop() {
+        super.onPause();
+        mp.pause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mp.stop();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         rl_activity_game = (RelativeLayout) findViewById(R.id.activity_game);
@@ -104,7 +124,6 @@ public class GameActivity extends AppCompatActivity {
         rl_vitality_black = (RelativeLayout) findViewById(R.id.rl_vitality_black);
         gl_details_white = (GridLayout) findViewById(R.id.gl_details_white);
         gl_details_black = (GridLayout) findViewById(R.id.gl_details_black);
-
 
         for (int i = 0; i < 4; i++) {
             gl_action_white.getChildAt(i).setOnTouchListener(spellOnTouch);
@@ -168,13 +187,18 @@ public class GameActivity extends AppCompatActivity {
         initCellBoard();
 
         refreshPieceInfo(false, 0, 0);
-
-        gameStart();
-
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
+//        mp = MediaPlayer.create(this, R.raw.background_music);
+//        mp.setLooping(true);
+//        mp.start();
+        sfxIndex = true;
+        storeGameData();
+//        playSfx(R.raw.game_end);
+//        gameStart();
     }
+
+
+    // ATTENTION: This was auto-generated to implement the App Indexing API.
+    // See https://g.co/AppIndexing/AndroidStudio for more information.
 
     private void initCellBackground() {
 
@@ -257,20 +281,39 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void refreshPieceBoard() {
+        if (gl_pieceBoard.getChildCount() > 36) {
+            gl_pieceBoard.removeViews(36, gl_pieceBoard.getChildCount() - 36);
+        }
         for (int r = 0; r < 6; r++) {
             for (int c = 0; c < 6; c++) {
+                Resources res = this.getResources();
                 AppCompatImageView pieceImage = (AppCompatImageView) gl_pieceBoard.getChildAt(c + 6 * r);
-                if (!pieceImage.getTag().toString().substring(0, 1).equals(chessboard.boardPiece[r][c].getType())) {
+                pieceImage.clearAnimation();
+                if (pieceImage.getTag().toString().substring(0, 1).equals(chessboard.boardPiece[r][c].getType())) {
+                    if (chessboard.boardPiece[r][c].state.equals("n") && !chessboard.boardPiece[r][c].isNorImg) {
+                        pieceImage.setImageResource(res.getIdentifier(chessboard.boardPiece[r][c].getImageName(), "drawable", this.getPackageName()));
+                        chessboard.boardPiece[r][c].isNorImg = true;
+                    } else if (chessboard.boardPiece[r][c].state.equals("f") && chessboard.boardPiece[r][c].isNorImg) {
+                        pieceImage.setImageResource(res.getIdentifier(chessboard.boardPiece[r][c].getImageName() + "_frozen", "drawable", this.getPackageName()));
+                        chessboard.boardPiece[r][c].isNorImg = false;
+                    }
+                } else {
                     pieceImage.setTag(chessboard.boardPiece[r][c].getType() + r + c);
                     if (chessboard.boardPiece[r][c].getTypeInt() == 1) {
                         pieceImage.setBackgroundResource(R.drawable.piece_bg_white);
-                        Resources res = this.getResources();
-                        pieceImage.setImageResource(res.getIdentifier(chessboard.boardPiece[r][c].getImageName(), "drawable", this.getPackageName()));
+                        if (chessboard.boardPiece[r][c].state.equals("n")) {
+                            pieceImage.setImageResource(res.getIdentifier(chessboard.boardPiece[r][c].getImageName(), "drawable", this.getPackageName()));
+                        } else {
+                            pieceImage.setImageResource(res.getIdentifier(chessboard.boardPiece[r][c].getImageName() + "_frozen", "drawable", this.getPackageName()));
+                        }
                         pieceImage.setRotation(0);
                     } else if (chessboard.boardPiece[r][c].getTypeInt() == -1) {
                         pieceImage.setBackgroundResource(R.drawable.piece_bg_black);
-                        Resources res = this.getResources();
-                        pieceImage.setImageResource(res.getIdentifier(chessboard.boardPiece[r][c].getImageName(), "drawable", this.getPackageName()));
+                        if (chessboard.boardPiece[r][c].state.equals("n")) {
+                            pieceImage.setImageResource(res.getIdentifier(chessboard.boardPiece[r][c].getImageName(), "drawable", this.getPackageName()));
+                        } else {
+                            pieceImage.setImageResource(res.getIdentifier(chessboard.boardPiece[r][c].getImageName() + "_frozen", "drawable", this.getPackageName()));
+                        }
                         pieceImage.setRotation(180);
                     } else {
                         pieceImage.setImageResource(0);
@@ -282,6 +325,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void refreshBoarderBoard() {
+
         Animation boardAm = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.boarder_flash);
         for (int r = 0; r < 6; r++) {
             for (int c = 0; c < 6; c++) {
@@ -362,31 +406,31 @@ public class GameActivity extends AppCompatActivity {
         ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
         if (chessboard.movePlayerInt == 1) {
             for (int i = 0; i < 4; i++) {
-                ((ImageView) gl_action_black.getChildAt(i)).setColorFilter(filter);
+                gl_action_black.getChildAt(i).getBackground().setColorFilter(filter);
                 gl_action_black.getChildAt(i).clearAnimation();
                 gl_action_black.getChildAt(i).setOnTouchListener(null);
                 if (chessboard.playerPiece[chessboard.movePlayerXInt][2].state.equals("n")
                         && !chessboard.playerPiece[chessboard.movePlayerXInt][2].spells.substring(i, i + 1).equals("0")) {
-                    ((ImageView) gl_action_white.getChildAt(i)).clearColorFilter();
+                    gl_action_white.getChildAt(i).getBackground().clearColorFilter();
                     gl_action_white.getChildAt(i).setOnTouchListener(spellOnTouch);
                 } else {
-                    ((ImageView) gl_action_white.getChildAt(i)).setColorFilter(filter);
+                    gl_action_white.getChildAt(i).getBackground().setColorFilter(filter);
                     gl_action_white.getChildAt(i).clearAnimation();
                     gl_action_white.getChildAt(i).setOnTouchListener(null);
                 }
             }
         } else {
             for (int i = 0; i < 4; i++) {
-                ((ImageView) gl_action_white.getChildAt(i)).setColorFilter(filter);
+                gl_action_white.getChildAt(i).getBackground().setColorFilter(filter);
                 gl_action_white.getChildAt(i).clearAnimation();
                 gl_action_white.getChildAt(i).setOnTouchListener(null);
 
                 if (chessboard.playerPiece[chessboard.movePlayerXInt][2].state.equals("n")
                         && !chessboard.playerPiece[chessboard.movePlayerXInt][2].spells.substring(i, i + 1).equals("0")) {
-                    ((ImageView) gl_action_black.getChildAt(i)).clearColorFilter();
+                    gl_action_black.getChildAt(i).getBackground().clearColorFilter();
                     gl_action_black.getChildAt(i).setOnTouchListener(spellOnTouch);
                 } else {
-                    ((ImageView) gl_action_black.getChildAt(i)).setColorFilter(filter);
+                    gl_action_black.getChildAt(i).getBackground().setColorFilter(filter);
                     gl_action_white.getChildAt(i).setOnTouchListener(null);
                 }
             }
@@ -396,7 +440,12 @@ public class GameActivity extends AppCompatActivity {
     private void refreshPieceInfo(boolean index, int cellX, int cellY) {
         if (index) {
             if (chessboard.movePlayerInt == 1) {
-                tv_vitality_white.setText("" + chessboard.boardPiece[cellX][cellY].vitality + "/" + chessboard.boardPiece[cellX][cellY].getInitVitality());
+                if (chessboard.boardPiece[cellX][cellY].state.equals("f")) {
+                    tv_vitality_white.setText("" + chessboard.boardPiece[cellX][cellY].vitality + "/" + chessboard.boardPiece[cellX][cellY].getInitVitality() + "(" + chessboard.frozenPieceStr.substring(2, 3) + ")");
+                } else {
+                    tv_vitality_white.setText("" + chessboard.boardPiece[cellX][cellY].vitality + "/" + chessboard.boardPiece[cellX][cellY].getInitVitality());
+                }
+
 //                move range
                 tv_moveRange_white.setText("" + chessboard.boardPiece[cellX][cellY].getMoveRange());
 //                move type
@@ -451,7 +500,11 @@ public class GameActivity extends AppCompatActivity {
                         tv_attackDirections_white.setText("/");
                 }
             } else {
-                tv_vitality_black.setText("" + chessboard.boardPiece[cellX][cellY].vitality + "/" + chessboard.boardPiece[cellX][cellY].getInitVitality());
+                if (chessboard.boardPiece[cellX][cellY].state.equals("f")) {
+                    tv_vitality_black.setText("" + chessboard.boardPiece[cellX][cellY].vitality + "/" + chessboard.boardPiece[cellX][cellY].getInitVitality() + "(" + chessboard.frozenPieceStr.substring(5, 6) + ")");
+                } else {
+                    tv_vitality_black.setText("" + chessboard.boardPiece[cellX][cellY].vitality + "/" + chessboard.boardPiece[cellX][cellY].getInitVitality());
+                }
 //                move range
                 tv_moveRange_black.setText("" + chessboard.boardPiece[cellX][cellY].getMoveRange());
 //                move type
@@ -573,26 +626,71 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private boolean cellOnTouch(View v, MotionEvent event) {
-        if (gl_pieceBoard.getChildCount() > 36) {
-            gl_pieceBoard.removeViews(36, gl_pieceBoard.getChildCount() - 36);
-        }
-
         int cellX = 5 - Integer.parseInt(v.getTag().toString().substring(4, 5));
         int cellY = Integer.parseInt(v.getTag().toString().substring(5, 6));
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
+                attackIndex = false;
+                moveIndex = false;
+                if (!action.equals("R")) {
+                    if (gl_pieceBoard.getChildCount() > 36) {
+                        gl_pieceBoard.removeViews(36, gl_pieceBoard.getChildCount() - 36);
+                    }
+                }
                 for (int i = 0; i < gl_pieceBoard.getChildCount(); i++) {
                     gl_pieceBoard.getChildAt(i).clearAnimation();
                 }
                 if (chessboard.boardPiece[cellX][cellY].getTypeInt() == chessboard.movePlayerInt) {
                     animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.touch_down);
                     gl_pieceBoard.getChildAt(6 * cellX + cellY).startAnimation(animation);
+                    if (action.equals("")) {
+                        switch (chessboard.boardPiece[cellX][cellY].getPlayerY()) {
+                            case 0: {
+                                playSfx(R.raw.piece_giant_summon);
+                                break;
+                            }
+                            case 1: {
+                                playSfx(R.raw.piece_dragon_summon);
+                                break;
+                            }
+                            case 2: {
+                                playSfx(R.raw.piece_mage_summon);
+                                break;
+                            }
+                            case 3: {
+                                playSfx(R.raw.piece_archer_summon);
+                                break;
+                            }
+                            case 4: {
+                                playSfx(R.raw.piece_knight_summon);
+                                break;
+                            }
+                            case 5: {
+                                playSfx(R.raw.piece_squire_summon);
+                                break;
+                            }
+                            case 6: {
+                                playSfx(R.raw.piece_knight_summon);
+                                break;
+                            }
+                            case 7: {
+                                playSfx(R.raw.piece_squire_summon);
+                                break;
+                            }
+                        }
+                    }
 
+
+                } else if (chessboard.boardPiece[cellX][cellY].getTypeInt() == 0) {
+                    playSfx(R.raw.touch_piece_empty);
+                } else {
+                    playSfx(R.raw.touch_piece_oppoent);
                 }
+                refreshPieceInfo(true, cellX, cellY);
                 break;
             }
             case MotionEvent.ACTION_UP: {
-                refreshPieceInfo(true, cellX, cellY);
+                actionIndex = false;
                 if (action.equals("")) {
                     if (chessboard.boardPiece[cellX][cellY].getTypeInt() == chessboard.movePlayerInt
                             && chessboard.boardPiece[cellX][cellY].state.equals("n")) {
@@ -604,22 +702,21 @@ public class GameActivity extends AppCompatActivity {
                         }
                         fromX = cellX;
                         fromY = cellY;
-                    } else {
-                        moveIndex = false;
-                        attackIndex = false;
                     }
+// else {
+//                        moveIndex = false;
+//                        attackIndex = false;
+//                    }
                     refreshMoveAttack();
-                    break;
                 } else {
                     switch (action) {
                         case "M": {
                             if (moveIndex) {
                                 if (chessboard.isAction(action + (fromX + 1) + (fromY + 1) + (cellX + 1) + (cellY + 1))) {
                                     actionIndex = true;
-                                    moveIndex = false;
-                                } else {
-                                    moveIndex = false;
+                                    playSfx(R.raw.action_move);
                                 }
+                                moveIndex = false;
                             }
                             break;
                         }
@@ -627,23 +724,57 @@ public class GameActivity extends AppCompatActivity {
                             if (attackIndex) {
                                 if (chessboard.isAction(action + (fromX + 1) + (fromY + 1) + (cellX + 1) + (cellY + 1))) {
                                     actionIndex = true;
-                                    attackIndex = false;
-                                } else {
-                                    actionIndex = false;
-                                    attackIndex = false;
-                                    action = "";
+                                    switch (chessboard.boardPiece[cellX][cellY].getPlayerY()) {
+                                        case 0: {
+                                            playSfx(R.raw.piece_giant_attack);
+                                            break;
+                                        }
+                                        case 1: {
+                                            playSfx(R.raw.piece_dragon_attack);
+                                            break;
+                                        }
+                                        case 2: {
+                                            playSfx(R.raw.piece_mage_attack);
+                                            break;
+                                        }
+                                        case 3: {
+                                            playSfx(R.raw.piece_archer_attack);
+                                            break;
+                                        }
+                                        case 4: {
+                                            playSfx(R.raw.piece_knight_attack);
+                                            break;
+                                        }
+                                        case 5: {
+                                            playSfx(R.raw.piece_squire_attack);
+                                            break;
+                                        }
+                                        case 6: {
+                                            playSfx(R.raw.piece_knight_attack);
+                                            break;
+                                        }
+                                        case 7: {
+                                            playSfx(R.raw.piece_squire_attack);
+                                            break;
+                                        }
+                                    }
                                 }
+                                attackIndex = false;
                             }
                             break;
                         }
                         case "F": {
                             if (chessboard.isAction(action + (cellX + 1) + (cellY + 1) + 0 + 0)) {
                                 actionIndex = true;
+                                playSfx(R.raw.spell_freeze);
                             } else {
+                                if (chessboard.boardPiece[cellX][cellY].getTypeInt() == chessboard.movePlayerInt) {
+                                    gl_pieceBoard.getChildAt(6 * cellX + cellY).clearAnimation();
+                                }
                                 if (chessboard.movePlayerInt == 1) {
-                                    gl_action_white.getChildAt(0).getAnimation().cancel();
+                                    gl_action_white.getChildAt(0).clearAnimation();
                                 } else {
-                                    gl_action_black.getChildAt(0).getAnimation().cancel();
+                                    gl_action_black.getChildAt(0).clearAnimation();
                                 }
                             }
                             break;
@@ -651,12 +782,13 @@ public class GameActivity extends AppCompatActivity {
                         case "H": {
                             if (chessboard.isAction(action + (cellX + 1) + (cellY + 1) + 0 + 0)) {
                                 actionIndex = true;
-                                gl_pieceBoard.getChildAt(6*cellX+cellY).clearAnimation();
+                                gl_pieceBoard.getChildAt(6 * cellX + cellY).clearAnimation();
+                                playSfx(R.raw.spell_heal);
                             } else {
                                 if (chessboard.movePlayerInt == 1) {
-                                    gl_action_white.getChildAt(1).getAnimation().cancel();
+                                    gl_action_white.getChildAt(1).clearAnimation();
                                 } else {
-                                    gl_action_black.getChildAt(1).getAnimation().cancel();
+                                    gl_action_black.getChildAt(1).clearAnimation();
                                 }
                             }
                             break;
@@ -664,11 +796,12 @@ public class GameActivity extends AppCompatActivity {
                         case "R": {
                             if (chessboard.isAction(action + (cellX + 1) + (cellY + 1) + 0 + 0)) {
                                 actionIndex = true;
+                                playSfx(R.raw.spell_revive);
                             } else {
                                 if (chessboard.movePlayerInt == 1) {
-                                    gl_action_white.getChildAt(2).getAnimation().cancel();
+                                    gl_action_white.getChildAt(2).clearAnimation();
                                 } else {
-                                    gl_action_black.getChildAt(2).getAnimation().cancel();
+                                    gl_action_black.getChildAt(2).clearAnimation();
                                 }
                             }
                             break;
@@ -677,15 +810,15 @@ public class GameActivity extends AppCompatActivity {
                             if (teleportIndex) {
                                 if (chessboard.isAction(action + (fromX + 1) + (fromY + 1) + (cellX + 1) + (cellY + 1))) {
                                     actionIndex = true;
-                                    teleportIndex = false;
+                                    playSfx(R.raw.spell_teleport);
                                 } else {
-                                    action = "";
                                     if (chessboard.movePlayerInt == 1) {
-                                        gl_action_white.getChildAt(3).getAnimation().cancel();
+                                        gl_action_white.getChildAt(3).clearAnimation();
                                     } else {
-                                        gl_action_black.getChildAt(3).getAnimation().cancel();
+                                        gl_action_black.getChildAt(3).clearAnimation();
                                     }
                                 }
+                                teleportIndex = false;
                             } else {
                                 fromX = cellX;
                                 fromY = cellY;
@@ -698,11 +831,8 @@ public class GameActivity extends AppCompatActivity {
                     }
                     if (actionIndex) {
                         action = "";
-                        fromX = 0;
-                        fromY = 0;
                         moveIndex = false;
-                        teleportIndex = false;
-                        actionIndex = false;
+                        attackIndex = false;
                         refreshPieceBoard();
                         refreshBoarderBoard();
                         refreshSpells();
@@ -715,14 +845,18 @@ public class GameActivity extends AppCompatActivity {
                         }
                     } else {
                         if (!(action.equals("T") && teleportIndex)) {
+                            playSfx(R.raw.action_invalid);
                             action = "";
+                            moveIndex = false;
+                            attackIndex = false;
+                            refreshPieceBoard();
                             refreshSpells();
                             refreshMoveAttack();
-                            refreshPieceBoard();
                             refreshPieceInfo(true, cellX, cellY);
                         }
                     }
                 }
+                break;
             }
         }
 
@@ -730,42 +864,39 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private boolean spellOnTouch(View v, MotionEvent event) {
-        moveIndex = false;
-        attackIndex = false;
-        action = "";
-        refreshMoveAttack();
+//        playSfx(R.raw.button_click);
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
+                moveIndex = false;
+                attackIndex = false;
+                refreshMoveAttack();
+                refreshSpells();
+                playSfx(R.raw.button_click);
                 if (gl_pieceBoard.getChildCount() > 36) {
                     gl_pieceBoard.removeViews(36, gl_pieceBoard.getChildCount() - 36);
                 }
                 for (int i = 0; i < gl_pieceBoard.getChildCount(); i++) {
                     gl_pieceBoard.getChildAt(i).clearAnimation();
                 }
-                if (chessboard.movePlayerInt == 1) {
-                    for (int i = 0; i < 4; i++) {
-                        gl_action_white.getChildAt(i).clearAnimation();
-                    }
-                } else {
-                    for (int i = 0; i < 4; i++) {
-                        gl_action_black.getChildAt(i).clearAnimation();
-                    }
+                for (int i = 0; i < 4; i++) {
+                    gl_action_white.getChildAt(i).clearAnimation();
+                    gl_action_black.getChildAt(i).clearAnimation();
+
                 }
+                v.setOnTouchListener(null);
                 switch (v.getTag().toString()) {
                     case "Heal": {
                         action = "H";
-                        System.out.println("Action= H");
                         break;
                     }
                     case "Teleport": {
                         action = "T";
-                        System.out.println("Action= T");
                         teleportIndex = false;
                         break;
                     }
                     case "Revive": {
                         action = "R";
-                        System.out.println("Action= R");
                         int reviveX;
                         int reviveY;
                         for (int r = 0; r < 8; r++) {
@@ -800,7 +931,6 @@ public class GameActivity extends AppCompatActivity {
                     }
                     case "Freeze": {
                         action = "F";
-                        System.out.println("Action= F");
                         break;
                     }
                 }
@@ -809,8 +939,6 @@ public class GameActivity extends AppCompatActivity {
                 break;
             }
             case MotionEvent.ACTION_UP: {
-//                    animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.touch_up);
-//                    v.startAnimation(animation);
                 break;
             }
         }
@@ -821,20 +949,23 @@ public class GameActivity extends AppCompatActivity {
     private boolean moveAttackOnTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
-                if (chessboard.movePlayerInt == 1) {
-                    findViewById(R.id.bn_move_white).clearAnimation();
-                    findViewById(R.id.bn_attack_white).clearAnimation();
-                } else {
-                    findViewById(R.id.bn_move_black).clearAnimation();
-                    findViewById(R.id.bn_attack_black).clearAnimation();
-                }
-                animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.touch_down);
-                v.startAnimation(animation);
-
-
+                playSfx(R.raw.button_click);
                 if (gl_pieceBoard.getChildCount() > 36) {
                     gl_pieceBoard.removeViews(36, gl_pieceBoard.getChildCount() - 36);
                 }
+
+                if (chessboard.movePlayerInt == 1) {
+                    findViewById(R.id.bn_attack_white).clearAnimation();
+                    findViewById(R.id.bn_move_white).clearAnimation();
+                } else {
+                    findViewById(R.id.bn_attack_black).clearAnimation();
+                    findViewById(R.id.bn_move_black).clearAnimation();
+                }
+
+                animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.touch_down);
+                v.startAnimation(animation);
+                v.setOnTouchListener(null);
+
                 Set cellSet = new TreeSet();
                 if (v.getTag().equals("Move")) {
                     cellSet = chessboard.getMoveCells(fromX, fromY);
@@ -875,6 +1006,81 @@ public class GameActivity extends AppCompatActivity {
             }
         }
         return false;
+    }
+
+    private void gameStart() {
+
+        final Animation an_count_down = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.game_start);
+        final RelativeLayout rl_game_start = (RelativeLayout) findViewById(R.id.rl_game_start);
+        rl_game_start.setBackgroundColor(Color.BLACK);
+        rl_game_start.setAlpha((float) 0.9);
+        rl_game_start.setClickable(true);
+
+        final RelativeLayout.LayoutParams rl_game_start_Params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        rl_game_start_Params.addRule(RelativeLayout.CENTER_IN_PARENT);
+        rl_game_start_Params.height = 200;
+        final ImageView iv_count_down3 = new ImageView(getBaseContext());
+        iv_count_down3.setLayoutParams(rl_game_start_Params);
+        iv_count_down3.setImageResource(R.drawable.count_down_3);
+
+        rl_game_start.addView(iv_count_down3);
+        iv_count_down3.startAnimation(an_count_down);
+//        playSfx(R.raw.game_start_countdown_3);
+        iv_count_down3.getAnimation().setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                iv_count_down3.setImageResource(R.drawable.count_down_2);
+                iv_count_down3.startAnimation(an_count_down);
+//                playSfx(R.raw.game_start_countdown_2);
+                iv_count_down3.getAnimation().setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        iv_count_down3.setImageResource(R.drawable.count_down_1);
+                        iv_count_down3.startAnimation(an_count_down);
+//                        playSfx(R.raw.game_start_countdown_1);
+                        iv_count_down3.getAnimation().setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+//                                playSfx(R.raw.game_start);
+                                rl_activity_game.removeView(rl_game_start);
+                                initBoarderBoard();
+                                refreshBoarderBoard();
+                                refreshSpells();
+                                refreshMoveAttack();
+                                chronometer_white.start();
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
     }
 
     private boolean gameIsEnd() {
@@ -939,75 +1145,30 @@ public class GameActivity extends AppCompatActivity {
         return index;
     }
 
-    private void gameStart() {
+    private void storeGameData() {
+        SQLiteDatabase db = openOrCreateDatabase("group08", Context.MODE_PRIVATE, null);
 
-        final Animation an_count_down = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.game_start);
-        final RelativeLayout rl_game_start = (RelativeLayout) findViewById(R.id.rl_game_start);
-        rl_game_start.setBackgroundColor(Color.BLACK);
-        rl_game_start.setAlpha((float) 0.9);
-        rl_game_start.setClickable(true);
+        String sql2 = "CREATE TABLE IF NOT EXISTS game_history (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,player_name String, player_score int,boardStr String,timestamp DATETIME DEFAULT CURRENT_TIMESTAMP )";
+        db.execSQL(sql2);
+        String sql3 = "INSERT INTO game_history (player_name,player_score,boardStr) Values ('22', 10, '22')";
+        db.execSQL(sql3);
 
-        final RelativeLayout.LayoutParams rl_game_start_Params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        rl_game_start_Params.addRule(RelativeLayout.CENTER_IN_PARENT);
-        rl_game_start_Params.height = 200;
-        final ImageView iv_count_down3 = new ImageView(getBaseContext());
-        iv_count_down3.setLayoutParams(rl_game_start_Params);
-        iv_count_down3.setImageResource(R.drawable.count_down_3);
+    }
 
-        rl_game_start.addView(iv_count_down3);
-        iv_count_down3.startAnimation(an_count_down);
-        iv_count_down3.getAnimation().setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
+    private void playSfx(int resId) {
+        if (sfxIndex) {
+            mp = MediaPlayer.create(this, resId);
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    mediaPlayer.stop();
+                    mediaPlayer.release();
+                    mediaPlayer = null;
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                iv_count_down3.setImageResource(R.drawable.count_down_2);
-                iv_count_down3.startAnimation(an_count_down);
-                iv_count_down3.getAnimation().setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        iv_count_down3.setImageResource(R.drawable.count_down_1);
-                        iv_count_down3.startAnimation(an_count_down);
-                        iv_count_down3.getAnimation().setAnimationListener(new Animation.AnimationListener() {
-                            @Override
-                            public void onAnimationStart(Animation animation) {
-                            }
-
-                            @Override
-                            public void onAnimationEnd(Animation animation) {
-                                rl_activity_game.removeView(rl_game_start);
-                                initBoarderBoard();
-                                refreshBoarderBoard();
-                                refreshSpells();
-                                refreshMoveAttack();
-                                chronometer_white.start();
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(Animation animation) {
-
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
+                }
+            });
+            mp.start();
+        }
     }
 
 //    private void storeGameData(Context context) {
@@ -1041,6 +1202,7 @@ public class GameActivity extends AppCompatActivity {
             return false;
         }
     };
+
 }
 
 
