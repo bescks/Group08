@@ -143,58 +143,35 @@ public class GameActivity extends AppCompatActivity {
 //      er layer: initialize cellBoard
         gl_cellBoard = (GridLayout) findViewById(R.id.gl_cellBoard);
         initPieceBoard();
+////        chessboard.setBoardWithStr("W",
+////                "000000" +
+////                        "000000" +
+////                        "000000" +
+////                        "000000" +
+////                        "0000K0" +
+////                        "M0000k",
+////                "7120000000000000"
+////                , "000000",
+////                "F0RT0HRT");
+//
 //        chessboard.setBoardWithStr("W",
 //                "000000" +
+//                        "g00000" +
+//                        "G00000" +
 //                        "000000" +
-//                        "000000" +
-//                        "000000" +
-//                        "0000K0" +
-//                        "M0000k",
-//                "7120000000000000"
-//                , "000000",
-//                "F0RT0HRT");
-
-        chessboard.setBoardWithStr("W",
-                "000000" +
-                        "g00000" +
-                        "G00000" +
-                        "000000" +
-                        "m00000" +
-                        "M00000", "5777000000000000", "133123", "0HRTFHRT");
+//                        "m00000" +
+//                        "M00000", "5777000000000000", "133123", "0HRTFHRT");
 
 
         refreshPieceBoard();
-        initBoarderBoard();
-        refreshBoarderBoard();
+
         initCellBoard();
-        refreshSpells();
-        refreshMoveAttack();
+
         refreshPieceInfo(false, 0, 0);
 
-        gameIsEnd("","",0,0);
+        gameStart();
 
 
-//        rl_waitLayout.setAlpha(0.3);
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    synchronized (this) {
-                        wait(3000);
-                    }
-                } catch (InterruptedException ex) {
-                }
-
-                // TODO
-                //THESE TWO LINES ARE THE ONES I WANT TO RUN AFTER 3 SECONDS
-
-            }
-        };
-
-        thread.start();
-
-
-        chronometer_white.start();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
     }
@@ -616,7 +593,6 @@ public class GameActivity extends AppCompatActivity {
             }
             case MotionEvent.ACTION_UP: {
                 refreshPieceInfo(true, cellX, cellY);
-                actionIndex = false;
                 if (action.equals("")) {
                     if (chessboard.boardPiece[cellX][cellY].getTypeInt() == chessboard.movePlayerInt
                             && chessboard.boardPiece[cellX][cellY].state.equals("n")) {
@@ -628,6 +604,9 @@ public class GameActivity extends AppCompatActivity {
                         }
                         fromX = cellX;
                         fromY = cellY;
+                    } else {
+                        moveIndex = false;
+                        attackIndex = false;
                     }
                     refreshMoveAttack();
                     break;
@@ -637,9 +616,9 @@ public class GameActivity extends AppCompatActivity {
                             if (moveIndex) {
                                 if (chessboard.isAction(action + (fromX + 1) + (fromY + 1) + (cellX + 1) + (cellY + 1))) {
                                     actionIndex = true;
+                                    moveIndex = false;
                                 } else {
                                     moveIndex = false;
-                                    action = "";
                                 }
                             }
                             break;
@@ -648,8 +627,10 @@ public class GameActivity extends AppCompatActivity {
                             if (attackIndex) {
                                 if (chessboard.isAction(action + (fromX + 1) + (fromY + 1) + (cellX + 1) + (cellY + 1))) {
                                     actionIndex = true;
+                                    attackIndex = false;
                                 } else {
                                     actionIndex = false;
+                                    attackIndex = false;
                                     action = "";
                                 }
                             }
@@ -659,10 +640,9 @@ public class GameActivity extends AppCompatActivity {
                             if (chessboard.isAction(action + (cellX + 1) + (cellY + 1) + 0 + 0)) {
                                 actionIndex = true;
                             } else {
-                                action = "";
                                 if (chessboard.movePlayerInt == 1) {
                                     gl_action_white.getChildAt(0).getAnimation().cancel();
-                                }else {
+                                } else {
                                     gl_action_black.getChildAt(0).getAnimation().cancel();
                                 }
                             }
@@ -671,11 +651,11 @@ public class GameActivity extends AppCompatActivity {
                         case "H": {
                             if (chessboard.isAction(action + (cellX + 1) + (cellY + 1) + 0 + 0)) {
                                 actionIndex = true;
+                                gl_pieceBoard.getChildAt(6*cellX+cellY).clearAnimation();
                             } else {
-                                action = "";
                                 if (chessboard.movePlayerInt == 1) {
                                     gl_action_white.getChildAt(1).getAnimation().cancel();
-                                }else {
+                                } else {
                                     gl_action_black.getChildAt(1).getAnimation().cancel();
                                 }
                             }
@@ -685,10 +665,9 @@ public class GameActivity extends AppCompatActivity {
                             if (chessboard.isAction(action + (cellX + 1) + (cellY + 1) + 0 + 0)) {
                                 actionIndex = true;
                             } else {
-                                action = "";
                                 if (chessboard.movePlayerInt == 1) {
                                     gl_action_white.getChildAt(2).getAnimation().cancel();
-                                }else {
+                                } else {
                                     gl_action_black.getChildAt(2).getAnimation().cancel();
                                 }
                             }
@@ -698,22 +677,25 @@ public class GameActivity extends AppCompatActivity {
                             if (teleportIndex) {
                                 if (chessboard.isAction(action + (fromX + 1) + (fromY + 1) + (cellX + 1) + (cellY + 1))) {
                                     actionIndex = true;
+                                    teleportIndex = false;
+                                } else {
+                                    action = "";
+                                    if (chessboard.movePlayerInt == 1) {
+                                        gl_action_white.getChildAt(3).getAnimation().cancel();
+                                    } else {
+                                        gl_action_black.getChildAt(3).getAnimation().cancel();
+                                    }
                                 }
                             } else {
-                                action = "";
-                                if (chessboard.movePlayerInt == 1) {
-                                    gl_action_white.getChildAt(3).getAnimation().cancel();
-                                }else {
-                                    gl_action_black.getChildAt(3).getAnimation().cancel();
-                                }
-
+                                fromX = cellX;
+                                fromY = cellY;
+                                teleportIndex = true;
                             }
                             break;
                         }
 
 
                     }
-                    System.out.println(actionIndex);
                     if (actionIndex) {
                         action = "";
                         fromX = 0;
@@ -727,13 +709,18 @@ public class GameActivity extends AppCompatActivity {
                         refreshMoveAttack();
                         refreshPieceInfo(false, 0, 0);
                         refreshScoreTime();
+                        if (gameIsEnd()) {
+                            chronometer_white.stop();
+                            chronometer_black.stop();
+                        }
                     } else {
-                        fromX = cellX;
-                        fromY = cellY;
-                        refreshSpells();
-                        refreshMoveAttack();
-                        refreshPieceBoard();
-                        refreshPieceInfo(true, cellX, cellY);
+                        if (!(action.equals("T") && teleportIndex)) {
+                            action = "";
+                            refreshSpells();
+                            refreshMoveAttack();
+                            refreshPieceBoard();
+                            refreshPieceInfo(true, cellX, cellY);
+                        }
                     }
                 }
             }
@@ -743,9 +730,9 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private boolean spellOnTouch(View v, MotionEvent event) {
-        moveIndex=false;
-        attackIndex=false;
-        action="";
+        moveIndex = false;
+        attackIndex = false;
+        action = "";
         refreshMoveAttack();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
@@ -890,46 +877,148 @@ public class GameActivity extends AppCompatActivity {
         return false;
     }
 
-    private void gameIsEnd(String whiteRes,String blackRes, int whiteScore,int blackScore ) {
+    private boolean gameIsEnd() {
 
-        RelativeLayout rl_game_end = (RelativeLayout) findViewById(R.id.rl_game_end);
-        rl_game_end.setBackgroundColor(Color.BLACK);
-        rl_game_end.setAlpha((float) 0.9);
-        rl_game_end.setClickable(true);
+        boolean index = false;
+        if (!chessboard.resultStr.equals("")) {
+            index = true;
+            RelativeLayout rl_game_end = (RelativeLayout) findViewById(R.id.rl_game_end);
+            rl_game_end.setBackgroundColor(Color.BLACK);
+            rl_game_end.setAlpha((float) 0.9);
+            rl_game_end.setClickable(true);
 
-        RelativeLayout.LayoutParams rl_game_end_white_Params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        rl_game_end_white_Params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        rl_game_end_white_Params.setMargins(0,1210,0,0);
-        TextView tv_end_white = new TextView(getBaseContext());
-        tv_end_white.setText("You lose!");
-        tv_end_white.setTextColor(Color.WHITE);
-        tv_end_white.setTypeface(Typeface.MONOSPACE);
-        tv_end_white.setTextSize(22);
-        tv_end_white.setLayoutParams(rl_game_end_white_Params);
+            RelativeLayout.LayoutParams rl_game_end_white_Params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            rl_game_end_white_Params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+            rl_game_end_white_Params.setMargins(0, 1210, 0, 0);
+            TextView tv_end_white = new TextView(getBaseContext());
+            String endMessageWhite = "";
+            String endMessageBlack = "";
+            switch (chessboard.resultStr) {
+                case "WHITE": {
+                    endMessageWhite += "YOU WIN!";
+                    endMessageBlack += "YOU LOSE!";
+                    break;
+                }
+                case "BLACK": {
+                    endMessageWhite += "YOU LOSE!";
+                    endMessageBlack += "YOU WIN!";
+                    break;
+                }
+                case "DRAW": {
+                    endMessageWhite += "DRAW!";
+                    endMessageBlack += "DRAW!";
+                    break;
+                }
+            }
+            tv_end_white.setText(endMessageWhite + "\n" + "SCORE: " + chessboard.playerScore[0]);
+            tv_end_white.setTextColor(Color.WHITE);
+            tv_end_white.setTypeface(Typeface.MONOSPACE);
+            tv_end_white.setTextSize(22);
+            tv_end_white.setLayoutParams(rl_game_end_white_Params);
 
-        RelativeLayout.LayoutParams rl_game_end_black_Params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        rl_game_end_black_Params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        rl_game_end_black_Params.setMargins(0,620,0,0);
-        TextView tv_end_black = new TextView(getBaseContext());
-        tv_end_black.setRotation(180);
-        tv_end_black.setText("You \nlose!");
-        tv_end_black.setTextColor(Color.WHITE);
-        tv_end_black.setTypeface(Typeface.MONOSPACE);
-        tv_end_black.setTextSize(22);
-        tv_end_black.setLayoutParams(rl_game_end_black_Params);
+            RelativeLayout.LayoutParams rl_game_end_black_Params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            rl_game_end_black_Params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+            rl_game_end_black_Params.setMargins(0, 520, 0, 0);
+            TextView tv_end_black = new TextView(getBaseContext());
+            tv_end_black.setRotation(180);
 
 
+            tv_end_black.setText(endMessageBlack + "\n" + "SCORE: " + chessboard.playerScore[1]);
+            ;
+            tv_end_black.setTextColor(Color.WHITE);
+            tv_end_black.setTypeface(Typeface.MONOSPACE);
+            tv_end_black.setTextSize(22);
+            tv_end_black.setLayoutParams(rl_game_end_black_Params);
 
-
-
-
-
-        rl_activity_game.addView(tv_end_white);
-        rl_activity_game.addView(tv_end_black);
-        rl_game_end.startAnimation( AnimationUtils.loadAnimation(getApplicationContext(), R.anim.game_end));
-        tv_end_white.startAnimation( AnimationUtils.loadAnimation(getApplicationContext(), R.anim.game_end));
-        tv_end_black.startAnimation( AnimationUtils.loadAnimation(getApplicationContext(), R.anim.game_end));
+            rl_activity_game.addView(tv_end_white);
+            rl_activity_game.addView(tv_end_black);
+            rl_game_end.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.game_end));
+            tv_end_white.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.game_end));
+            tv_end_black.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.game_end));
+        }
+        return index;
     }
+
+    private void gameStart() {
+
+        final Animation an_count_down = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.game_start);
+        final RelativeLayout rl_game_start = (RelativeLayout) findViewById(R.id.rl_game_start);
+        rl_game_start.setBackgroundColor(Color.BLACK);
+        rl_game_start.setAlpha((float) 0.9);
+        rl_game_start.setClickable(true);
+
+        final RelativeLayout.LayoutParams rl_game_start_Params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        rl_game_start_Params.addRule(RelativeLayout.CENTER_IN_PARENT);
+        rl_game_start_Params.height = 200;
+        final ImageView iv_count_down3 = new ImageView(getBaseContext());
+        iv_count_down3.setLayoutParams(rl_game_start_Params);
+        iv_count_down3.setImageResource(R.drawable.count_down_3);
+
+        rl_game_start.addView(iv_count_down3);
+        iv_count_down3.startAnimation(an_count_down);
+        iv_count_down3.getAnimation().setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                iv_count_down3.setImageResource(R.drawable.count_down_2);
+                iv_count_down3.startAnimation(an_count_down);
+                iv_count_down3.getAnimation().setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        iv_count_down3.setImageResource(R.drawable.count_down_1);
+                        iv_count_down3.startAnimation(an_count_down);
+                        iv_count_down3.getAnimation().setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                rl_activity_game.removeView(rl_game_start);
+                                initBoarderBoard();
+                                refreshBoarderBoard();
+                                refreshSpells();
+                                refreshMoveAttack();
+                                chronometer_white.start();
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+    }
+
+//    private void storeGameData(Context context) {
+//
+//        SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase("data/data/it.polimi.group08.db/databased/gamedata.db", null);
+//        Cursor c = db.rawQuery("SELECT count(*) FROM gamedata WHERE type='table' AND name=game_history'", null);
+//        if (c.getInt(0) == 0) {
+//            String create_table = "create table if not exists Student(name text primary key, code integer)";
+//        }
+//        String create_table = "create table if not exists Student(name text primary key, code integer)";
+//    }
 
     private View.OnTouchListener moveAttackOnTouch = new View.OnTouchListener() {
         @Override

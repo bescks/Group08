@@ -35,7 +35,7 @@ public class Chessboard {
     private String frozenPieceStr;
 
     private String unusedSpells;
-    private String resultStr;
+    public String resultStr;
 
     public void initBoard() {
 //        initializing parameter
@@ -342,7 +342,6 @@ public class Chessboard {
             refreshBoardStr();
             refreshPlayerScore();
         } else System.out.println("ERROR:<The action is not executed!>");
-        print();
         return index;
     }
 
