@@ -35,7 +35,7 @@ public class Chessboard {
     public String frozenPieceStr;
 
     private String unusedSpells;
-    public String resultStr;
+    private String resultStr;
 
     public void initBoard() {
 //        initializing parameter
@@ -82,6 +82,7 @@ public class Chessboard {
             System.out.println("ERROR:<The length of input String is in correct!>");
         }
         turnsNum = 1;
+        boardStr = m + b + v + f + u;
         switch (m) {
             case "W": {
                 movePlayerInt = 1;
@@ -266,7 +267,15 @@ public class Chessboard {
     }
 
     public String getBoardStr() {
-        return boardStr + resultStr;
+        return boardStr;
+    }
+
+    public String getResultStr() {
+        return resultStr;
+    }
+
+    public int getTurnsNum() {
+        return turnsNum;
     }
 
     public boolean isAction(String actionStr) {
@@ -398,6 +407,11 @@ public class Chessboard {
                     }
                 }
             }
+        }
+        if (resultStr.equals("WHITE")) {
+            playerScore[0] += (playerScore[0] + 2 * Math.abs(playerScore[0] - playerScore[1]));
+        } else if (resultStr.equals("BLACK")) {
+            playerScore[1] += (playerScore[0] + 2 * Math.abs(playerScore[0] - playerScore[1]));
         }
     }
 

@@ -45,6 +45,15 @@
                 android:orientation="horizontal"
                 android:rotation="180">
 
+                <TextView
+                    android:text="Round:1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/tv_round_black"
+                    android:textColor="@android:color/white"
+                    android:layout_weight="1"
+                    android:layout_gravity="left|center" />
+
                 <ImageView
                     android:id="@+id/iv_score_black"
                     android:layout_width="20dp"
@@ -56,7 +65,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="0/0"
-                    android:textColor="@android:color/white" />
+                    android:textColor="@android:color/white"
+                    android:gravity="center" />
 
                 <ImageView
                     android:id="@+id/iv_timer_black"
@@ -70,7 +80,8 @@
                     android:layout_width="80dp"
                     android:layout_height="match_parent"
                     android:layout_marginRight="0dp"
-                    android:textColor="@android:color/white" />
+                    android:textColor="@android:color/white"
+                    android:gravity="center" />
             </LinearLayout>
 
             <View
@@ -909,8 +920,16 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
-                android:gravity="right|center"
                 android:orientation="horizontal">
+
+                <TextView
+                    android:text="Round:1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/tv_round_white"
+                    android:layout_weight="1"
+                    android:layout_gravity="left|center"
+                    android:textColor="@android:color/white" />
 
                 <ImageView
                     android:id="@+id/iv_score_white"
@@ -923,7 +942,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="0/0"
-                    android:textColor="@android:color/white" />
+                    android:textColor="@android:color/white"
+                    android:gravity="center" />
 
                 <ImageView
                     android:id="@+id/iv_timer_white"
@@ -936,8 +956,9 @@
                     android:id="@+id/chronometer_white"
                     android:layout_width="80dp"
                     android:layout_height="match_parent"
-                    android:layout_marginRight="0dp"
-                    android:textColor="@android:color/white" />
+                    android:textColor="@android:color/white"
+                    android:layout_marginRight="1dp"
+                    android:gravity="center" />
             </LinearLayout>
 
         </LinearLayout>
@@ -991,10 +1012,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/rl_game_end"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_margin="1dp">
+        android:id="@+id/rl_game_end">
 
     </RelativeLayout>
 

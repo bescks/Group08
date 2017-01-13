@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Typeface;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -30,6 +31,7 @@ import it.polimi.group08.boards.Chessboard;
 
 
 public class GameActivity extends AppCompatActivity {
+    MyApplication app;
     Chessboard chessboard = new Chessboard();
     RelativeLayout rl_activity_game;
     GridLayout gl_cellBackground;
@@ -80,6 +82,7 @@ public class GameActivity extends AppCompatActivity {
     boolean actionIndex;
 
     boolean sfxIndex;
+    boolean musciIndex;
 
     int fromX;
     int fromY;
@@ -87,17 +90,26 @@ public class GameActivity extends AppCompatActivity {
     Animation animation;
 
     MediaPlayer mp;
+    MediaPlayer backgroundMusic;
 
     @Override
     protected void onStop() {
         super.onPause();
-        mp.pause();
+        backgroundMusic.pause();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        backgroundMusic.start();
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mp.stop();
+        backgroundMusic.stop();
     }
 
     @Override
@@ -105,6 +117,7 @@ public class GameActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        app = ((MyApplication) getApplicationContext());
         rl_activity_game = (RelativeLayout) findViewById(R.id.activity_game);
 //      initialize chessboard
         chessboard.initBoard();
@@ -173,6 +186,7 @@ public class GameActivity extends AppCompatActivity {
 ////                , "000000",
 ////                "F0RT0HRT");
 //
+        chessboard.initBoard();
 //        chessboard.setBoardWithStr("W",
 //                "000000" +
 //                        "g00000" +
@@ -187,13 +201,24 @@ public class GameActivity extends AppCompatActivity {
         initCellBoard();
 
         refreshPieceInfo(false, 0, 0);
-//        mp = MediaPlayer.create(this, R.raw.background_music);
-//        mp.setLooping(true);
-//        mp.start();
-        sfxIndex = true;
-        storeGameData();
-//        playSfx(R.raw.game_end);
-//        gameStart();
+
+        musciIndex = app.musicIndex;
+        sfxIndex = app.sfxIndex;
+
+
+        backgroundMusic = MediaPlayer.create(this, R.raw.game_background);
+        backgroundMusic.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        if (musciIndex) {
+            backgroundMusic.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mediaPlayer) {
+                    mediaPlayer.setLooping(true);
+                    mediaPlayer.start();
+                }
+            });
+        }
+
+        gameStart();
     }
 
 
@@ -447,15 +472,16 @@ public class GameActivity extends AppCompatActivity {
                 }
 
 //                move range
-                tv_moveRange_white.setText("" + chessboard.boardPiece[cellX][cellY].getMoveRange());
+                String moverange = "" + chessboard.boardPiece[cellX][cellY].getMoveRange();
+                tv_moveRange_white.setText(moverange);
 //                move type
                 switch (chessboard.boardPiece[cellX][cellY].getMoveType()) {
                     case "flight": {
-                        tv_moveType_white.setText("Flight");
+                        tv_moveType_white.setText(R.string.Flight);
                         break;
                     }
                     case "walk": {
-                        tv_moveType_white.setText("Walk");
+                        tv_moveType_white.setText(R.string.Walk);
                         break;
                     }
                     default:
@@ -468,7 +494,7 @@ public class GameActivity extends AppCompatActivity {
                         break;
                     }
                     case "*": {
-                        tv_moveDirections_white.setText("Any");
+                        tv_moveDirections_white.setText(R.string.Any);
                         break;
                     }
                     default:
@@ -478,10 +504,12 @@ public class GameActivity extends AppCompatActivity {
                 if (chessboard.boardPiece[cellX][cellY].getAttackRange() == 0) {
                     tv_attackRange_white.setText("N.A.");
                 } else {
-                    tv_attackRange_white.setText("" + chessboard.boardPiece[cellX][cellY].getAttackRange());
+                    String attackRange = "" + chessboard.boardPiece[cellX][cellY].getAttackRange();
+                    tv_attackRange_white.setText(attackRange);
                 }
 //                attack Strength
-                tv_attackStrength_white.setText("" + chessboard.boardPiece[cellX][cellY].getAttackStrength());
+                String attackStrength = "" + chessboard.boardPiece[cellX][cellY].getAttackStrength();
+                tv_attackStrength_white.setText(attackStrength);
 //                attack direcions
                 switch (chessboard.boardPiece[cellX][cellY].getAttackDirections()) {
                     case "+": {
@@ -489,7 +517,7 @@ public class GameActivity extends AppCompatActivity {
                         break;
                     }
                     case "x": {
-                        tv_attackDirections_white.setText("Diag");
+                        tv_attackDirections_white.setText(R.string.Diag);
                         break;
                     }
                     case "": {
@@ -506,15 +534,16 @@ public class GameActivity extends AppCompatActivity {
                     tv_vitality_black.setText("" + chessboard.boardPiece[cellX][cellY].vitality + "/" + chessboard.boardPiece[cellX][cellY].getInitVitality());
                 }
 //                move range
-                tv_moveRange_black.setText("" + chessboard.boardPiece[cellX][cellY].getMoveRange());
+                String moveRange = "" + chessboard.boardPiece[cellX][cellY].getMoveRange();
+                tv_moveRange_black.setText(moveRange);
 //                move type
                 switch (chessboard.boardPiece[cellX][cellY].getMoveType()) {
                     case "flight": {
-                        tv_moveType_black.setText("Flight");
+                        tv_moveType_black.setText(R.string.Flight);
                         break;
                     }
                     case "walk": {
-                        tv_moveType_black.setText("Walk");
+                        tv_moveType_black.setText(R.string.Walk);
                         break;
                     }
                     default:
@@ -527,7 +556,7 @@ public class GameActivity extends AppCompatActivity {
                         break;
                     }
                     case "*": {
-                        tv_moveDirections_black.setText("Any");
+                        tv_moveDirections_black.setText(R.string.Any);
                         break;
                     }
                     default:
@@ -537,10 +566,12 @@ public class GameActivity extends AppCompatActivity {
                 if (chessboard.boardPiece[cellX][cellY].getAttackRange() == 0) {
                     tv_attackRange_black.setText("N.A.");
                 } else {
-                    tv_attackRange_black.setText("" + chessboard.boardPiece[cellX][cellY].getAttackRange());
+                    String attackRange = "" + chessboard.boardPiece[cellX][cellY].getAttackRange();
+                    tv_attackRange_black.setText(attackRange);
                 }
 //                attack Strength
-                tv_attackStrength_black.setText("" + chessboard.boardPiece[cellX][cellY].getAttackStrength());
+                String attackStrength = "" + chessboard.boardPiece[cellX][cellY].getAttackStrength();
+                tv_attackStrength_black.setText(attackStrength);
 //                attack direcions
                 switch (chessboard.boardPiece[cellX][cellY].getAttackDirections()) {
                     case "+": {
@@ -548,7 +579,7 @@ public class GameActivity extends AppCompatActivity {
                         break;
                     }
                     case "x": {
-                        tv_attackDirections_black.setText("Diag");
+                        tv_attackDirections_black.setText(R.string.Diag);
                         break;
                     }
                     case "": {
@@ -610,6 +641,9 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void refreshScoreTime() {
+        String round = "Round:" + (chessboard.getTurnsNum() + 1) / 2;
+        ((TextView) findViewById(R.id.tv_round_white)).setText(round);
+        ((TextView) findViewById(R.id.tv_round_black)).setText(round);
         tv_score_white.setText("" + chessboard.playerScore[0] + "/" + chessboard.playerScore[1]);
         tv_score_black.setText("" + chessboard.playerScore[1] + "/" + chessboard.playerScore[0]);
         if (chessboard.movePlayerInt == 1) {
@@ -630,12 +664,14 @@ public class GameActivity extends AppCompatActivity {
         int cellY = Integer.parseInt(v.getTag().toString().substring(5, 6));
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
-                attackIndex = false;
-                moveIndex = false;
                 if (!action.equals("R")) {
                     if (gl_pieceBoard.getChildCount() > 36) {
                         gl_pieceBoard.removeViews(36, gl_pieceBoard.getChildCount() - 36);
                     }
+                }
+                if (!action.equals("M") && !action.equals("A")) {
+                    moveIndex = false;
+                    attackIndex = false;
                 }
                 for (int i = 0; i < gl_pieceBoard.getChildCount(); i++) {
                     gl_pieceBoard.getChildAt(i).clearAnimation();
@@ -1025,7 +1061,7 @@ public class GameActivity extends AppCompatActivity {
 
         rl_game_start.addView(iv_count_down3);
         iv_count_down3.startAnimation(an_count_down);
-//        playSfx(R.raw.game_start_countdown_3);
+        playSfx(R.raw.game_start_countdown_3);
         iv_count_down3.getAnimation().setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -1035,7 +1071,7 @@ public class GameActivity extends AppCompatActivity {
             public void onAnimationEnd(Animation animation) {
                 iv_count_down3.setImageResource(R.drawable.count_down_2);
                 iv_count_down3.startAnimation(an_count_down);
-//                playSfx(R.raw.game_start_countdown_2);
+                playSfx(R.raw.game_start_countdown_2);
                 iv_count_down3.getAnimation().setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
@@ -1045,7 +1081,7 @@ public class GameActivity extends AppCompatActivity {
                     public void onAnimationEnd(Animation animation) {
                         iv_count_down3.setImageResource(R.drawable.count_down_1);
                         iv_count_down3.startAnimation(an_count_down);
-//                        playSfx(R.raw.game_start_countdown_1);
+                        playSfx(R.raw.game_start_countdown_1);
                         iv_count_down3.getAnimation().setAnimationListener(new Animation.AnimationListener() {
                             @Override
                             public void onAnimationStart(Animation animation) {
@@ -1053,7 +1089,7 @@ public class GameActivity extends AppCompatActivity {
 
                             @Override
                             public void onAnimationEnd(Animation animation) {
-//                                playSfx(R.raw.game_start);
+                                playSfx(R.raw.game_start);
                                 rl_activity_game.removeView(rl_game_start);
                                 initBoarderBoard();
                                 refreshBoarderBoard();
@@ -1086,7 +1122,7 @@ public class GameActivity extends AppCompatActivity {
     private boolean gameIsEnd() {
 
         boolean index = false;
-        if (!chessboard.resultStr.equals("")) {
+        if (!chessboard.getResultStr().equals("")) {
             index = true;
             RelativeLayout rl_game_end = (RelativeLayout) findViewById(R.id.rl_game_end);
             rl_game_end.setBackgroundColor(Color.BLACK);
@@ -1099,7 +1135,7 @@ public class GameActivity extends AppCompatActivity {
             TextView tv_end_white = new TextView(getBaseContext());
             String endMessageWhite = "";
             String endMessageBlack = "";
-            switch (chessboard.resultStr) {
+            switch (chessboard.getResultStr()) {
                 case "WHITE": {
                     endMessageWhite += "YOU WIN!";
                     endMessageBlack += "YOU LOSE!";
@@ -1130,7 +1166,6 @@ public class GameActivity extends AppCompatActivity {
 
 
             tv_end_black.setText(endMessageBlack + "\n" + "SCORE: " + chessboard.playerScore[1]);
-            ;
             tv_end_black.setTextColor(Color.WHITE);
             tv_end_black.setTypeface(Typeface.MONOSPACE);
             tv_end_black.setTextSize(22);
@@ -1141,45 +1176,50 @@ public class GameActivity extends AppCompatActivity {
             rl_game_end.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.game_end));
             tv_end_white.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.game_end));
             tv_end_black.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.game_end));
+            playSfx(R.raw.game_end);
+            storeGameData();
         }
         return index;
     }
 
     private void storeGameData() {
+        int highScore = Math.max(chessboard.playerScore[0], chessboard.playerScore[1]);
+        String playerName = "";
+
         SQLiteDatabase db = openOrCreateDatabase("group08", Context.MODE_PRIVATE, null);
-
-        String sql2 = "CREATE TABLE IF NOT EXISTS game_history (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,player_name String, player_score int,boardStr String,timestamp DATETIME DEFAULT CURRENT_TIMESTAMP )";
+        String sql1 = "CREATE TABLE IF NOT EXISTS game_history (_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,player_name String, player_score int,board_str String,win_player String,timestamp DATETIME DEFAULT CURRENT_TIMESTAMP )";
+        db.execSQL(sql1);
+        String sql2 = "INSERT INTO game_history (player_name,player_score,board_str,win_player) Values ('" + playerName + "'," + highScore + " ,'" + chessboard.getBoardStr() + "','" + chessboard.getResultStr() + "')";
         db.execSQL(sql2);
-        String sql3 = "INSERT INTO game_history (player_name,player_score,boardStr) Values ('22', 10, '22')";
-        db.execSQL(sql3);
-
+//        db.delete("game_history", null, null);
+//        Cursor mCount = db.rawQuery("SELECT COUNT(*) FROM game_history", null);
+//        mCount.moveToFirst();
+//        int count = mCount.getInt(0);
+//        System.out.println(count);
+//        mCount.close();
+        db.close();
     }
 
     private void playSfx(int resId) {
         if (sfxIndex) {
-            mp = MediaPlayer.create(this, resId);
+            mp = MediaPlayer.create(getBaseContext(), resId);
+            mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mediaPlayer) {
+                    mediaPlayer.start();
+                }
+            });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
                     mediaPlayer.stop();
                     mediaPlayer.release();
-                    mediaPlayer = null;
 
                 }
             });
-            mp.start();
         }
     }
-
-//    private void storeGameData(Context context) {
-//
-//        SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase("data/data/it.polimi.group08.db/databased/gamedata.db", null);
-//        Cursor c = db.rawQuery("SELECT count(*) FROM gamedata WHERE type='table' AND name=game_history'", null);
-//        if (c.getInt(0) == 0) {
-//            String create_table = "create table if not exists Student(name text primary key, code integer)";
-//        }
-//        String create_table = "create table if not exists Student(name text primary key, code integer)";
-//    }
 
     private View.OnTouchListener moveAttackOnTouch = new View.OnTouchListener() {
         @Override
