@@ -23,18 +23,21 @@ public class HighScoreActivity extends AppCompatActivity {
     Animation animationLeft;
     Animation animationRight;
 
+
     @Override
     protected void onStop() {
         super.onPause();
         backgroundMusic.pause();
 
     }
+
     @Override
     protected void onResume() {
         super.onResume();
         backgroundMusic.start();
 
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -75,7 +78,7 @@ public class HighScoreActivity extends AppCompatActivity {
             iv_ranking.setLayoutParams(iv_ranking_Params);
             gl_high_score.addView(iv_ranking);
             animationLeft = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.translate_from_left);
-            animationLeft.setDuration(500+i*200);
+            animationLeft.setDuration(500 + i * 200);
             iv_ranking.startAnimation(animationLeft);
 
             GridLayout.LayoutParams tv_ranking_Params = new GridLayout.LayoutParams();
@@ -89,7 +92,7 @@ public class HighScoreActivity extends AppCompatActivity {
             tv_ranking.setLayoutParams(tv_ranking_Params);
             tv_ranking.setTypeface(Typeface.MONOSPACE);
             tv_ranking.setTextSize(10);
-            String ranking=""+(i+1);
+            String ranking = "" + (i + 1);
             tv_ranking.setText(ranking);
             tv_ranking.setTextColor(Color.WHITE);
             gl_high_score.addView(tv_ranking);
@@ -109,7 +112,7 @@ public class HighScoreActivity extends AppCompatActivity {
             tv_score.setTextColor(Color.BLACK);
             gl_high_score.addView(tv_score);
             animationRight = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.translate_from_right);
-            animationRight.setDuration(500+i*200);
+            animationRight.setDuration(500 + i * 200);
             tv_score.startAnimation(animationRight);
 
             GridLayout.LayoutParams tv_winner_Params = new GridLayout.LayoutParams();
@@ -161,5 +164,11 @@ public class HighScoreActivity extends AppCompatActivity {
         }
         cur.close();
         db.close();
+
+
     }
+
+
+
+
 }

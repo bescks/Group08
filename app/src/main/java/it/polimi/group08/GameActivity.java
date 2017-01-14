@@ -14,11 +14,13 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Chronometer;
+import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -45,6 +47,7 @@ public class GameActivity extends AppCompatActivity {
     RelativeLayout rl_vitality_black;
     GridLayout gl_details_black;
     RelativeLayout secondLayer;
+    RelativeLayout rl_combat;
 
     TextView tv_vitality_white;
     TextView tv_vitality_black;
@@ -80,6 +83,10 @@ public class GameActivity extends AppCompatActivity {
     boolean attackIndex;
     boolean teleportIndex;
     boolean actionIndex;
+
+
+    int vitalityLeft;
+    int vitalityRight;
 
     boolean sfxIndex;
     boolean musciIndex;
@@ -137,6 +144,8 @@ public class GameActivity extends AppCompatActivity {
         rl_vitality_black = (RelativeLayout) findViewById(R.id.rl_vitality_black);
         gl_details_white = (GridLayout) findViewById(R.id.gl_details_white);
         gl_details_black = (GridLayout) findViewById(R.id.gl_details_black);
+
+        rl_combat = (RelativeLayout) findViewById(R.id.rl_combat);
 
         for (int i = 0; i < 4; i++) {
             gl_action_white.getChildAt(i).setOnTouchListener(spellOnTouch);
@@ -217,13 +226,8 @@ public class GameActivity extends AppCompatActivity {
                 }
             });
         }
-
         gameStart();
     }
-
-
-    // ATTENTION: This was auto-generated to implement the App Indexing API.
-    // See https://g.co/AppIndexing/AndroidStudio for more information.
 
     private void initCellBackground() {
 
@@ -748,9 +752,34 @@ public class GameActivity extends AppCompatActivity {
                     switch (action) {
                         case "M": {
                             if (moveIndex) {
+                                boolean combatindex = false;
+                                int combatMovePlayerInt = 0;
+                                int combatAtkStrL = 0;
+                                int combatVitalityL = 0;
+                                int combatTypeIntL = 0;
+                                int combatAtkStrR = 0;
+                                int combatVitalityR = 0;
+                                int combatTypeIntR = 0;
+                                if (chessboard.boardPiece[fromX][fromY].getTypeInt() * chessboard.boardPiece[cellX][cellY].getTypeInt() == -1) {
+                                    combatindex = true;
+                                    combatMovePlayerInt = chessboard.movePlayerInt;
+                                    combatAtkStrL = chessboard.boardPiece[fromX][fromY].getAttackStrength();
+                                    combatVitalityL = chessboard.boardPiece[fromX][fromY].vitality;
+                                    combatTypeIntL = chessboard.boardPiece[fromX][fromY].getPlayerY();
+
+                                    if (!chessboard.boardPiece[cellX][cellY].state.equals("f")) {
+                                        combatAtkStrR = chessboard.boardPiece[cellX][cellY].getAttackStrength();
+                                    }
+                                    combatVitalityR = chessboard.boardPiece[cellX][cellY].vitality;
+                                    combatTypeIntR = chessboard.boardPiece[cellX][cellY].getPlayerY();
+                                }
                                 if (chessboard.isAction(action + (fromX + 1) + (fromY + 1) + (cellX + 1) + (cellY + 1))) {
                                     actionIndex = true;
-                                    playSfx(R.raw.action_move);
+                                    if (combatindex) {
+                                        combatAnimation(combatMovePlayerInt, combatAtkStrL, combatVitalityL, combatTypeIntL, combatAtkStrR, combatVitalityR, combatTypeIntR);
+                                    } else {
+                                        playSfx(R.raw.action_move);
+                                    }
                                 }
                                 moveIndex = false;
                             }
@@ -760,6 +789,7 @@ public class GameActivity extends AppCompatActivity {
                             if (attackIndex) {
                                 if (chessboard.isAction(action + (fromX + 1) + (fromY + 1) + (cellX + 1) + (cellY + 1))) {
                                     actionIndex = true;
+                                    vitalityChange("-" + chessboard.boardPiece[fromX][fromY].getAttackStrength(), cellX, cellY);
                                     switch (chessboard.boardPiece[cellX][cellY].getPlayerY()) {
                                         case 0: {
                                             playSfx(R.raw.piece_giant_attack);
@@ -816,7 +846,9 @@ public class GameActivity extends AppCompatActivity {
                             break;
                         }
                         case "H": {
+                            String vitalityHeal = "+" + (chessboard.boardPiece[cellX][cellY].getInitVitality() - chessboard.boardPiece[cellX][cellY].vitality);
                             if (chessboard.isAction(action + (cellX + 1) + (cellY + 1) + 0 + 0)) {
+                                vitalityChange(vitalityHeal, cellX, cellY);
                                 actionIndex = true;
                                 gl_pieceBoard.getChildAt(6 * cellX + cellY).clearAnimation();
                                 playSfx(R.raw.spell_heal);
@@ -843,8 +875,39 @@ public class GameActivity extends AppCompatActivity {
                             break;
                         }
                         case "T": {
+                            boolean combatindex = false;
+                            int combatMovePlayerInt = 0;
+                            int combatAtkStrL = 0;
+                            int combatVitalityL = 0;
+                            int combatTypeIntL = 0;
+                            int combatAtkStrR = 0;
+                            int combatVitalityR = 0;
+                            int combatTypeIntR = 0;
                             if (teleportIndex) {
+                                if (chessboard.boardPiece[fromX][fromY].getTypeInt() * chessboard.boardPiece[cellX][cellY].getTypeInt() == -1) {
+                                    combatindex = true;
+                                    combatMovePlayerInt = chessboard.movePlayerInt;
+                                    if (!chessboard.boardPiece[fromX][fromY].state.equals("f")) {
+                                        combatAtkStrL = chessboard.boardPiece[fromX][fromY].getAttackStrength();
+                                    }
+                                    combatVitalityL = chessboard.boardPiece[fromX][fromY].vitality;
+                                    combatTypeIntL = chessboard.boardPiece[fromX][fromY].getPlayerY();
+
+
+                                    if (!chessboard.boardPiece[cellX][cellY].state.equals("f")) {
+                                        combatAtkStrR = chessboard.boardPiece[cellX][cellY].getAttackStrength();
+                                    }
+                                    combatVitalityR = chessboard.boardPiece[cellX][cellY].vitality;
+                                    combatTypeIntR = chessboard.boardPiece[cellX][cellY].getPlayerY();
+                                    if (chessboard.boardPiece[fromX][fromY].state.equals("f") && chessboard.boardPiece[cellX][cellY].state.equals("f")) {
+                                        combatAtkStrL = combatVitalityR;
+                                        combatAtkStrR = combatVitalityL;
+                                    }
+                                }
                                 if (chessboard.isAction(action + (fromX + 1) + (fromY + 1) + (cellX + 1) + (cellY + 1))) {
+                                    if (combatindex) {
+                                        combatAnimation(combatMovePlayerInt, combatAtkStrL, combatVitalityL, combatTypeIntL, combatAtkStrR, combatVitalityR, combatTypeIntR);
+                                    }
                                     actionIndex = true;
                                     playSfx(R.raw.spell_teleport);
                                 } else {
@@ -1220,6 +1283,423 @@ public class GameActivity extends AppCompatActivity {
             });
         }
     }
+
+    private void vitalityChange(String vitalityChange, int r, int c) {
+        final TextView tv_vitalityChange = new TextView(getBaseContext());
+
+        tv_vitalityChange.setText(vitalityChange);
+//        tv_vitalityChange.setTextColor(Color.parseColor("#ffcc0000"));
+        tv_vitalityChange.setTextColor(Color.WHITE);
+        tv_vitalityChange.setTextSize(16);
+        tv_vitalityChange.setTypeface(Typeface.MONOSPACE);
+        tv_vitalityChange.setGravity(Gravity.CENTER);
+
+        final GridLayout.LayoutParams tv_vitalityChange_Params = new GridLayout.LayoutParams();
+        tv_vitalityChange_Params.width = GridLayout.LayoutParams.WRAP_CONTENT;
+        tv_vitalityChange_Params.height = GridLayout.LayoutParams.WRAP_CONTENT;
+        tv_vitalityChange_Params.columnSpec = GridLayout.spec(c, 1, 1f);
+        tv_vitalityChange_Params.rowSpec = GridLayout.spec(5 - r, 1, 1f);
+        tv_vitalityChange_Params.setGravity(Gravity.CENTER);
+        tv_vitalityChange.setLayoutParams(tv_vitalityChange_Params);
+
+        Animation an_vitalityChange;
+
+        if (chessboard.movePlayerInt == -1) {
+            an_vitalityChange = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.attack_minusvitality_white);
+        } else {
+            tv_vitalityChange.setRotation(180);
+            an_vitalityChange = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.attack_minusvitality_black);
+        }
+
+        gl_boarderBoard.addView(tv_vitalityChange);
+
+        an_vitalityChange.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+                gl_boarderBoard.post(new Runnable() {
+                    public void run() {
+                        // it works without the runOnUiThread, but all UI updates must
+                        // be done on the UI thread
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                gl_boarderBoard.removeView(tv_vitalityChange);
+                            }
+                        });
+                    }
+                });
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        tv_vitalityChange.startAnimation(an_vitalityChange);
+    }
+
+    private void combatAnimation(int movePlayerInt, final int atkStrengthL, int vitalityL, int typeL, final int atkStrengthR, int vitalityR, int typeR) {
+        vitalityLeft = vitalityL;
+        vitalityRight = vitalityR;
+        final int musicAttackLeft;
+        final int musicAttackRight;
+        final int musicWinLeft;
+        final int musicWinRight;
+
+        rl_combat.setClickable(true);
+        rl_combat.setBackgroundColor(Color.BLACK);
+        rl_combat.getBackground().setAlpha(200);
+        if (movePlayerInt == -1) rl_combat.setRotation(180);
+
+        final Animation an_combatAppear = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.combat_appear);
+        final Animation an_combatDisappear = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.combat_disppear);
+        final Animation an_combatWinnerLeft = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.combat_winner_left);
+        final Animation an_combatWinnerRight = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.combat_winner_right);
+        final Animation an_combatLeft = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.combat_translate_left);
+        final Animation an_combatRight = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.combat_translate_right);
+        final Animation an_combatVitalityChangeWhite = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.attack_minusvitality_white);
+
+
+        final Animation an_combatDead = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.combat_dead);
+        final Animation an_combatDeadDisppear = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.combat_dead_disappear);
+        final Animation an_combatShake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.combat_shake);
+
+
+        final FrameLayout fl_combat = new FrameLayout(getBaseContext());
+        RelativeLayout.LayoutParams fl_combat_Paramas = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 360);
+        fl_combat_Paramas.addRule(RelativeLayout.CENTER_IN_PARENT);
+        fl_combat.setLayoutParams(fl_combat_Paramas);
+        fl_combat.setBackgroundColor(Color.WHITE);
+
+        final AppCompatImageView iv_combat_piece_left = new AppCompatImageView(getBaseContext());
+        FrameLayout.LayoutParams iv_combat_piece_left_Params = new FrameLayout.LayoutParams(360, FrameLayout.LayoutParams.MATCH_PARENT);
+        iv_combat_piece_left.setPadding(6, 6, 6, 6);
+        iv_combat_piece_left_Params.gravity = Gravity.CENTER_VERTICAL | Gravity.START;
+        iv_combat_piece_left.setLayoutParams(iv_combat_piece_left_Params);
+        switch (typeL) {
+            case 0: {
+                iv_combat_piece_left.setImageResource(R.drawable.piece_giant_combat_left);
+                musicAttackLeft = R.raw.piece_giant_attack;
+                musicWinLeft = R.raw.piece_giant_summon;
+                break;
+            }
+            case 1: {
+                iv_combat_piece_left.setImageResource(R.drawable.piece_dragon_combat_left);
+                musicAttackLeft = R.raw.piece_dragon_attack;
+                musicWinLeft = R.raw.piece_dragon_summon;
+                break;
+            }
+            case 2: {
+                iv_combat_piece_left.setImageResource(R.drawable.piece_mage_combat_left);
+                musicAttackLeft = R.raw.piece_mage_attack;
+                musicWinLeft = R.raw.piece_mage_summon;
+                break;
+            }
+            case 3: {
+                iv_combat_piece_left.setImageResource(R.drawable.piece_archer_combat_left);
+                musicAttackLeft = R.raw.piece_archer_attack;
+                musicWinLeft = R.raw.piece_archer_summon;
+                break;
+            }
+            case 4: {
+                iv_combat_piece_left.setImageResource(R.drawable.piece_knight_combat_left);
+                musicAttackLeft = R.raw.piece_knight_attack;
+                musicWinLeft = R.raw.piece_knight_summon;
+                break;
+            }
+            case 5: {
+                iv_combat_piece_left.setImageResource(R.drawable.piece_squire_combat_left);
+                musicAttackLeft = R.raw.piece_squire_attack;
+                musicWinLeft = R.raw.piece_squire_summon;
+                break;
+            }
+            case 6: {
+                iv_combat_piece_left.setImageResource(R.drawable.piece_knight_combat_left);
+                musicAttackLeft = R.raw.piece_knight_attack;
+                musicWinLeft = R.raw.piece_knight_summon;
+                break;
+            }
+            case 7: {
+                iv_combat_piece_left.setImageResource(R.drawable.piece_squire_combat_left);
+                musicAttackLeft = R.raw.piece_squire_attack;
+                musicWinLeft = R.raw.piece_squire_summon;
+                break;
+            }
+            default:
+                musicAttackLeft = 0;
+                musicWinLeft = 0;
+
+        }
+
+
+        final AppCompatImageView iv_combat_piece_right = new AppCompatImageView(getBaseContext());
+        FrameLayout.LayoutParams iv_combat_piece_right_Params = new FrameLayout.LayoutParams(360, FrameLayout.LayoutParams.MATCH_PARENT);
+        iv_combat_piece_right.setPadding(6, 6, 6, 6);
+        iv_combat_piece_right_Params.gravity = Gravity.CENTER_VERTICAL | Gravity.END;
+        iv_combat_piece_right.setLayoutParams(iv_combat_piece_right_Params);
+        switch (typeR) {
+            case 0: {
+                iv_combat_piece_right.setImageResource(R.drawable.piece_giant_combat_right);
+                musicAttackRight = R.raw.piece_giant_attack;
+                musicWinRight = R.raw.piece_giant_summon;
+                break;
+            }
+            case 1: {
+                iv_combat_piece_right.setImageResource(R.drawable.piece_dragon_combat_right);
+                musicAttackRight = R.raw.piece_dragon_attack;
+                musicWinRight = R.raw.piece_dragon_summon;
+                break;
+            }
+            case 2: {
+                iv_combat_piece_right.setImageResource(R.drawable.piece_mage_combat_right);
+                musicAttackRight = R.raw.piece_mage_attack;
+                musicWinRight = R.raw.piece_mage_summon;
+                break;
+            }
+            case 3: {
+                iv_combat_piece_right.setImageResource(R.drawable.piece_archer_combat_right);
+                musicAttackRight = R.raw.piece_archer_attack;
+                musicWinRight = R.raw.piece_archer_summon;
+                break;
+            }
+            case 4: {
+                iv_combat_piece_right.setImageResource(R.drawable.piece_knight_combat_right);
+                musicAttackRight = R.raw.piece_knight_attack;
+                musicWinRight = R.raw.piece_knight_summon;
+                break;
+            }
+            case 5: {
+                iv_combat_piece_right.setImageResource(R.drawable.piece_squire_combat_right);
+                musicAttackRight = R.raw.piece_squire_attack;
+                musicWinRight = R.raw.piece_squire_summon;
+                break;
+            }
+            case 6: {
+                iv_combat_piece_right.setImageResource(R.drawable.piece_knight_combat_right);
+                musicAttackRight = R.raw.piece_knight_attack;
+                musicWinRight = R.raw.piece_knight_summon;
+                break;
+            }
+            case 7: {
+                iv_combat_piece_right.setImageResource(R.drawable.piece_squire_combat_right);
+                musicAttackRight = R.raw.piece_squire_attack;
+                musicWinRight = R.raw.piece_squire_summon;
+                break;
+            }
+            default:
+                musicAttackRight = 0;
+                musicWinRight = 0;
+
+        }
+
+        final TextView tv_vitality_left = new TextView(getBaseContext());
+        FrameLayout.LayoutParams tv_vitality_left_Params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        tv_vitality_left_Params.setMargins(360, 0, 0, 0);
+        tv_vitality_left_Params.gravity = Gravity.START | Gravity.CENTER_VERTICAL;
+        tv_vitality_left.setLayoutParams(tv_vitality_left_Params);
+        tv_vitality_left.setTextColor(Color.parseColor("#ffcc0000"));
+        tv_vitality_left.setTypeface(Typeface.MONOSPACE);
+
+        final TextView tv_vitality_right = new TextView(getBaseContext());
+        FrameLayout.LayoutParams tv_vitality_right_Params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        tv_vitality_right_Params.setMargins(0, 0, 360, 0);
+        tv_vitality_right_Params.gravity = Gravity.END | Gravity.CENTER_VERTICAL;
+        tv_vitality_right.setLayoutParams(tv_vitality_right_Params);
+        tv_vitality_right.setTextColor(Color.parseColor("#ffcc0000"));
+        tv_vitality_right.setTypeface(Typeface.MONOSPACE);
+
+        rl_combat.addView(fl_combat);
+        fl_combat.addView(iv_combat_piece_left);
+        fl_combat.addView(iv_combat_piece_right);
+
+//        final Animation combatVitalityChangeBlack = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.combat_translate_right);
+
+        an_combatAppear.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                iv_combat_piece_left.startAnimation(an_combatLeft);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        an_combatLeft.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                vitalityRight -= atkStrengthL;
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+                iv_combat_piece_right.startAnimation(an_combatRight);
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+                playSfx(musicAttackLeft);
+                tv_vitality_right.setText("" + (vitalityRight + atkStrengthL) + "-" + atkStrengthL);
+                fl_combat.addView(tv_vitality_right);
+                tv_vitality_right.startAnimation(an_combatVitalityChangeWhite);
+                iv_combat_piece_right.startAnimation(an_combatShake);
+            }
+        });
+
+        an_combatRight.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                vitalityLeft -= atkStrengthR;
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                if (vitalityLeft > 0 && vitalityRight > 0) {
+                    iv_combat_piece_left.startAnimation(an_combatLeft);
+                } else if (vitalityLeft <= 0 && vitalityRight <= 0) {
+                    iv_combat_piece_left.startAnimation(an_combatDead);
+                    iv_combat_piece_right.startAnimation(an_combatDeadDisppear);
+                } else if (vitalityLeft <= 0 && vitalityRight > 0) {
+                    iv_combat_piece_left.startAnimation(an_combatDeadDisppear);
+                    iv_combat_piece_right.startAnimation(an_combatWinnerRight);
+                } else if (vitalityLeft > 0 && vitalityRight <= 0) {
+                    iv_combat_piece_left.startAnimation(an_combatWinnerLeft);
+                    iv_combat_piece_right.startAnimation(an_combatDeadDisppear);
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+                playSfx(musicAttackRight);
+                tv_vitality_left.setText("" + (vitalityLeft + atkStrengthR) + "-" + atkStrengthR);
+                fl_combat.addView(tv_vitality_left);
+                tv_vitality_left.startAnimation(an_combatVitalityChangeWhite);
+                iv_combat_piece_left.startAnimation(an_combatShake);
+            }
+        });
+
+
+        an_combatVitalityChangeWhite.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                rl_combat.post(new Runnable() {
+                    public void run() {
+                        // it works without the runOnUiThread, but all UI updates must
+                        // be done on the UI thread
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                fl_combat.removeViewAt(2);
+
+                            }
+                        });
+                    }
+                });
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+
+        an_combatWinnerLeft.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                playSfx(musicWinLeft);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                rl_combat.startAnimation(an_combatDisappear);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        an_combatWinnerRight.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                playSfx(musicWinRight);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                rl_combat.startAnimation(an_combatDisappear);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        an_combatDead.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                rl_combat.startAnimation(an_combatDisappear);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        an_combatDisappear.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                rl_combat.post(new Runnable() {
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                rl_combat.removeView(fl_combat);
+                                rl_combat.setClickable(false);
+                                rl_combat.setBackgroundColor(Color.TRANSPARENT);
+                                rl_combat.getBackground().setAlpha(255);
+                            }
+                        });
+                    }
+                });
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        rl_combat.startAnimation(an_combatAppear);
+
+    }
+
 
     private View.OnTouchListener moveAttackOnTouch = new View.OnTouchListener() {
         @Override
