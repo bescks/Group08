@@ -9,12 +9,11 @@ __Members:__
  - 854314 / 10501510 / Qizhengqiu Lu
 
 1. Min SDK Version: ApI 21
-2. Our app are solely developed and tested on Dongjie's android phone( ApI: 22, Resolution: 1080*1920, DPI: 3)
-So it would be work fine on Nexus 5(API 22)
+2. Our app are solely developed and tested on Dongjie's android phone( ApI: 22, Resolution: 1080*1920, DPI: 3  ). So it would be work fine on Nexus 5(API 22)
 3. As Dongjie's phone have physical navigation button, we set all activities in immersive mode
 
 
- Instruction to the Game:
+Instruction to the Game:
 ****MainActivity:
 
 New Game: create an new GameActivity and start a game
@@ -24,7 +23,7 @@ SFx: The sfx music include attack sound, summon sound, applause sound and so on
 
 ****GameActivity:
 
-    Action Instruction:
+Action Instruction:
 Move & Attack:
     1. Select your own piece
     2. If the piece have available move(attack) cells, the move(attack) button will be light
