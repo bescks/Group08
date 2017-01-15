@@ -8,10 +8,10 @@ __Members:__
  - 853699 / 10501992 / Jingwei Wan
  - 854314 / 10501510 / Qizhengqiu Lu
 
-Min SDK Version: ApI 21
-Our app are solely developed and tested on Dongjie's android phone( ApI: 22, Resolution: 1080*1920, DPI: 3).
+1. Min SDK Version: ApI 21
+2. Our app are solely developed and tested on Dongjie's android phone( ApI: 22, Resolution: 1080*1920, DPI: 3)
 So it would be work fine on Nexus 5(API 22)
-As Dongjie's phone have physical navigation button, we set all activities in immersive mode.
+3. As Dongjie's phone have physical navigation button, we set all activities in immersive mode
 
 
  Instruction to the Game:

@@ -300,7 +300,6 @@ public class Chessboard {
         int toX = Integer.parseInt(actionStr.substring(3, 4)) - 1;
         int toY = Integer.parseInt(actionStr.substring(4, 5)) - 1;
         refreshScoreTmp(action, fromX, fromY, toX, toY);
-        print();
         switch (action) {
 //            for different action, different classes need to be declared to execute the action
             case "M": {
@@ -359,7 +358,6 @@ public class Chessboard {
                 System.out.println("ERROR:<The action is invalid!>");
         }
         if (index) {
-            print();
             System.out.println("INFO:<The action is executed successfully!>");
             playerScore[movePlayerXInt] += scoreTmp;
             refreshBoardStr();

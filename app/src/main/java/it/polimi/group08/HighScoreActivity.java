@@ -21,9 +21,9 @@ import android.widget.TextView;
 public class HighScoreActivity extends AppCompatActivity {
     MyApplication app;
     MediaPlayer backgroundMusic;
-//    the animation of ranking icon and number are translated from left to right
+    //    the animation of ranking icon and number are translated from left to right
     Animation animationLeft;
-//    the animation of other data are translated from right to left
+    //    the animation of other data are translated from right to left
     Animation animationRight;
 
 
