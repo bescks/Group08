@@ -6,7 +6,7 @@ package it.polimi.group08.pieces;
 public class Knight extends Piece {
 
     public Knight(String c, int x1, int y1, int x2, int y2) {
-
+//  The following is some values to declare piece knight
         super(4, 1, "*", "walk", 1, 2, "x", c, "0");
         super.imageName ="piece_knight";
         super.twinIndex = true;

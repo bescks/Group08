@@ -6,7 +6,7 @@ package it.polimi.group08.pieces;
  */
 
 public class Giant extends Piece {
-
+    //  The following is some values to declare piece giant
     public Giant(String c) {
         super(5, 2, "+", "walk", 1, 4, "+", c, "0");
         super.imageName ="piece_giant";

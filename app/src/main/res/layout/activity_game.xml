@@ -812,7 +812,7 @@
                         android:layout_rowSpan="1"
                         android:gravity="left|center_vertical"
                         android:text="Attack Range"
-                        android:textColor="@android:color/black"
+                        android:textColor="@android:color/white"
                         android:textSize="7sp" />
 
                     <TextView

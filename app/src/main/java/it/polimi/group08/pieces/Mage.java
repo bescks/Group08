@@ -5,7 +5,7 @@ package it.polimi.group08.pieces;
  */
 
 public class Mage extends Piece {
-
+    //  The following is some values to declare piece mage
     public Mage(String c) {
         super(7, 1, "*", "walk", 0, 2, "", c, "0");
         super.imageName ="piece_mage";

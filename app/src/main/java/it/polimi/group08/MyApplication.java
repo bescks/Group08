@@ -22,6 +22,8 @@ public class MyApplication extends Application {
         super.onCreate();
         //  Set font for whole app
         FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Supercell-Magic_5.ttf");
+//       set music index and sfx index for all activities
+//       the two variables are used as global variables among all activities
         musicIndex = true;
         sfxIndex = true;
     }

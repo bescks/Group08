@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
 import android.view.Gravity;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.GridLayout;
@@ -20,7 +21,9 @@ import android.widget.TextView;
 public class HighScoreActivity extends AppCompatActivity {
     MyApplication app;
     MediaPlayer backgroundMusic;
+//    the animation of ranking icon and number are translated from left to right
     Animation animationLeft;
+//    the animation of other data are translated from right to left
     Animation animationRight;
 
 
@@ -34,6 +37,14 @@ public class HighScoreActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+//        hide navigation bar set the mode to immersive mode
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         musicStart(true);
 
     }
@@ -48,15 +59,26 @@ public class HighScoreActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_high_score);
+//        hide navigation bar and set the mode to immersive mode
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 
         app = ((MyApplication) getApplicationContext());
+//        initialize the background music
         backgroundMusic = MediaPlayer.create(this, R.raw.high_score_background);
         backgroundMusic.setAudioStreamType(AudioManager.STREAM_MUSIC);
         musicStart(true);
-        GridLayout gl_high_score = (GridLayout) findViewById(R.id.gl_high_score);
 
+        GridLayout gl_high_score = (GridLayout) findViewById(R.id.gl_high_score);
+//      add ranking, score winner and time to gridlayout gl_high_score
         for (int i = 0; i < 12; i++) {
             Resources res = this.getResources();
+//            add imageview of ranking
             GridLayout.LayoutParams iv_ranking_Params = new GridLayout.LayoutParams();
             AppCompatImageView iv_ranking = new AppCompatImageView(getBaseContext());
             iv_ranking_Params.width = 240;
@@ -72,7 +94,7 @@ public class HighScoreActivity extends AppCompatActivity {
             animationLeft = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.translate_from_left);
             animationLeft.setDuration(500 + i * 200);
             iv_ranking.startAnimation(animationLeft);
-
+//            add textview of ranking
             GridLayout.LayoutParams tv_ranking_Params = new GridLayout.LayoutParams();
             TextView tv_ranking = new TextView(getBaseContext());
             tv_ranking_Params.width = 240;
@@ -89,7 +111,7 @@ public class HighScoreActivity extends AppCompatActivity {
             tv_ranking.setTextColor(Color.WHITE);
             gl_high_score.addView(tv_ranking);
             tv_ranking.startAnimation(animationLeft);
-
+//            add textview of score
             GridLayout.LayoutParams tv_score_Params = new GridLayout.LayoutParams();
             TextView tv_score = new TextView(getBaseContext());
             tv_score_Params.width = 270;
@@ -106,7 +128,7 @@ public class HighScoreActivity extends AppCompatActivity {
             animationRight = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.translate_from_right);
             animationRight.setDuration(500 + i * 200);
             tv_score.startAnimation(animationRight);
-
+//            add textview of winner
             GridLayout.LayoutParams tv_winner_Params = new GridLayout.LayoutParams();
             TextView tv_winner = new TextView(getBaseContext());
             tv_winner_Params.width = 270;
@@ -121,7 +143,7 @@ public class HighScoreActivity extends AppCompatActivity {
             tv_winner.setTextColor(Color.BLACK);
             gl_high_score.addView(tv_winner);
             tv_winner.startAnimation(animationRight);
-
+//            add textview of time
             GridLayout.LayoutParams tv_time_Params = new GridLayout.LayoutParams();
             TextView tv_time = new TextView(getBaseContext());
             tv_time_Params.width = 300;
@@ -139,10 +161,13 @@ public class HighScoreActivity extends AppCompatActivity {
             tv_time.startAnimation(animationRight);
 
         }
-
+//The following code is used to query database and set the result to textview score, winner and time separately
+//        open databse
         SQLiteDatabase db = openOrCreateDatabase("group08", Context.MODE_PRIVATE, null);
+//        select table
         String sql1 = "CREATE TABLE IF NOT EXISTS game_history (_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,player_name String, player_score int,board_str String,win_player String,timestamp DATETIME DEFAULT CURRENT_TIMESTAMP )";
         db.execSQL(sql1);
+//        query the table and get result in a descend way
         Cursor cur = db.rawQuery("SELECT * FROM game_history ORDER BY player_score DESC", null);
         int i = 0;
         if (cur.moveToFirst()) {

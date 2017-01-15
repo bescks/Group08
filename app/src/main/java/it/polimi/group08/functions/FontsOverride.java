@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
  */
 
 public final class FontsOverride {
-
+//This class is used to set the font of this app
     public static void setDefaultFont(Context context,
                                       String staticTypefaceFieldName, String fontAssetName) {
         final Typeface regular = Typeface.createFromAsset(context.getAssets(),
@@ -19,8 +19,7 @@ public final class FontsOverride {
         replaceFont(staticTypefaceFieldName, regular);
     }
 
-    protected static void replaceFont(String staticTypefaceFieldName,
-                                      final Typeface newTypeface) {
+    protected static void replaceFont(String staticTypefaceFieldName, final Typeface newTypeface) {
         try {
             final Field staticField = Typeface.class
                     .getDeclaredField(staticTypefaceFieldName);

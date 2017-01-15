@@ -6,7 +6,7 @@ package it.polimi.group08.pieces;
 public class Squire extends Piece {
 
     public Squire(String c, int x1, int y1, int x2, int y2) {
-
+//  The following is some values to declare piece squire
         super(3, 1, "+", "walk", 0, 1, "", c, "0");
         super.imageName ="piece_squire";
         super.twinIndex = true;

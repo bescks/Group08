@@ -19,24 +19,44 @@ import it.polimi.group08.pieces.Piece;
 
 public class Chessboard {
     public GlobalVariables gV = new GlobalVariables();
+    //  emptyPiece represent the empty cell in chessboard, it's typeInt is 0.
+//  While typeInt for white piece is equal to 1, for black piece is equal to -1
     private Piece emptyPiece = gV.piece(0, 0);
     private int turnsNum;
+    //  movePlayerInt and movePlayerXInt are used to transfer "W" and "B" into integer.
+//  if it is white's turn now ,movePlayerInt = 1, movePlayerXInt = 0;
+//  if it is black's turn now ,movePlayerInt = -1, movePlayerXInt = 1;
     public int movePlayerInt;
     public int movePlayerXInt;
+    //  array playerscore is the score of two players, it will be refreshed after a valid action
+//    playerScore[0] is the score of white player
+//    playerScore[1] is the score of black player
     public int[] playerScore = new int[2];
     private int scoreTmp = 0;
+    //    boardPiece is the array of class piece, it's dimension is 6*6;
     public Piece[][] boardPiece;
+    //    boardPiece is the array of class piece, it's dimension is 2*8;
+//    for each player, there are 8 pieces in total. Each piece in the array is represent a non-empty piece.
+//    if the piece is dead after an action, the corresponding piece's state in playerPiece will be changed to "d"
     public Piece[][] playerPiece;
-
+    //    boardStr = "W" or "B" + boardType Str + vitalityStr + frozenPieceStr + unusedSpell + resultStr;
     private String boardStr;
+    //    boardTypeStr is the String of alive pieces' type in the board
     private String boardTypeStr;
+    //    vitalityStr is the String of vitality
     private String vitalityStr;
+    //    frozenPiece[0][0] and frozenPiece[0][1] represent the frozen white piece
+//    frozenPiece[0][2] represent the left round that the white frozen piece can be defreeze
+//    frozenPiece[1][0] and frozenPiece[1][1] represent the frozen black piece
+//    frozenPiece[0][2] represent the left round that the black frozen piece can be defreeze
     private int[][] frozenPiece = new int[2][3];
     public String frozenPieceStr;
 
     private String unusedSpells;
+    //    resultStr is represent the result of the game, if the game is not finished, it equal to ""
     private String resultStr;
 
+    //    The following methods' function is straightforwardly represent by their names
     public void initBoard() {
 //        initializing parameter
         turnsNum = 1;
@@ -57,7 +77,7 @@ public class Chessboard {
         refreshFrozenPieceStr();
 
         unusedSpells = "FHRTFHRT";
-        //        initializing boardPiece and playerPiece
+//        initializing boardPiece and playerPiece
         initPiece("n");
     }
 
@@ -230,6 +250,7 @@ public class Chessboard {
     }
 
     private void refreshResultStr() {
+//        according to the number of freeze pieces of two players and how many special cells are occupied by players to calculate the resultStr
         resultStr = "";
         int[] specialCellNum = new int[2];
         for (Object str : gV.specialCellsSet()) {
@@ -266,33 +287,22 @@ public class Chessboard {
         }
     }
 
-    public String getBoardStr() {
-        return boardStr;
-    }
-
-    public String getResultStr() {
-        return resultStr;
-    }
-
-    public int getTurnsNum() {
-        return turnsNum;
-    }
-
     public boolean isAction(String actionStr) {
         if (actionStr.length() != 5) {
             System.out.println("The length of action is incorrect!");
         }
+//        index is used to indict whether the action is executed successfully
+//        parse the action into five integers
         boolean index = false;
         String action = actionStr.substring(0, 1);
         int fromX = Integer.parseInt(actionStr.substring(1, 2)) - 1;
         int fromY = Integer.parseInt(actionStr.substring(2, 3)) - 1;
         int toX = Integer.parseInt(actionStr.substring(3, 4)) - 1;
         int toY = Integer.parseInt(actionStr.substring(4, 5)) - 1;
-        print();
         refreshScoreTmp(action, fromX, fromY, toX, toY);
         print();
-        System.out.println(actionStr);
         switch (action) {
+//            for different action, different classes need to be declared to execute the action
             case "M": {
                 Move mov = new Move();
                 if (mov.isMoved(movePlayerInt, boardPiece, fromX, fromY, toX, toY, emptyPiece)) {
@@ -331,6 +341,7 @@ public class Chessboard {
             case "F": {
                 Freeze fre = new Freeze();
                 if (fre.isFreezed(movePlayerInt, boardPiece, fromX, fromY, emptyPiece)) {
+//                    for the action "F", frozenpiece is needed to be refreshed independently
                     if (movePlayerInt == 1) {
                         frozenPiece[1][0] = fromX;
                         frozenPiece[1][1] = fromY;
@@ -348,6 +359,7 @@ public class Chessboard {
                 System.out.println("ERROR:<The action is invalid!>");
         }
         if (index) {
+            print();
             System.out.println("INFO:<The action is executed successfully!>");
             playerScore[movePlayerXInt] += scoreTmp;
             refreshBoardStr();
@@ -358,6 +370,7 @@ public class Chessboard {
 
     private void refreshScoreTmp(String act, int fX, int fY, int tX, int tY) {
         scoreTmp = 0;
+//        The following code is used to calculated the score a player can get after the result of the action
         switch (act) {
             case "M": {
                 if (boardPiece[tX][tY].getTypeInt() != 0) {
@@ -395,6 +408,7 @@ public class Chessboard {
         }
     }
 
+    //This method is used to determine whether the game is over. If the game is over, extra points will be added to the winner
     private void refreshPlayerScore() {
         if (resultStr.length() != 0) {
             for (int i = 0; i < 2; i++) {
@@ -415,17 +429,32 @@ public class Chessboard {
         }
     }
 
+    public String getBoardStr() {
+        return boardStr;
+    }
+
+    public String getResultStr() {
+        return resultStr;
+    }
+
+    public int getTurnsNum() {
+        return turnsNum;
+    }
+
+    //    This method is used to get all the available pieces that piece in row x and column y can attack
     public Set getAttackCells(int x, int y) {
         Attack atk = new Attack();
         return atk.getAvailCells(boardPiece, x, y);
     }
 
+    //    This method is used to get all the available pieces that piece in row x and column y can movw
     public Set getMoveCells(int x, int y) {
         Move mov = new Move();
         return mov.getAvailCells(boardPiece, x, y);
 
     }
 
+    //    print all the related parameters and variables in the board
     public void print() {
         System.out.println("********************************");
         if (movePlayerInt == 1) {

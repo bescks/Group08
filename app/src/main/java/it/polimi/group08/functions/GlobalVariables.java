@@ -19,6 +19,7 @@ import it.polimi.group08.pieces.Squire;
  */
 
 public class GlobalVariables {
+    //    This class contains some global variables
     private Set<String> specialCells = new TreeSet<>();
     private Map<String, String> typeToNum = new TreeMap<>();
     private Piece piece;
@@ -33,22 +34,27 @@ public class GlobalVariables {
         specialCells.add("25");
         specialCells.add("55");
 //          typeToNum
-//        black
+        //        white
+//      for example, ("G", "00") means that in the class piece array playerPiece, white piece giant is playerPiece[0][0]
         typeToNum.put("G", "00");
         typeToNum.put("D", "01");
         typeToNum.put("M", "02");
         typeToNum.put("A", "03");
         typeToNum.put("K", "04");
         typeToNum.put("S", "05");
-//        white
+
+        //        black
+//      for example, ("g", "10") means that in the class piece array playerPiece, black piece giant is playerPiece[1][0]
         typeToNum.put("g", "10");
         typeToNum.put("d", "11");
         typeToNum.put("m", "12");
         typeToNum.put("a", "13");
         typeToNum.put("k", "14");
         typeToNum.put("s", "15");
-    }
 
+    }
+// The following class is used to return different piece class
+//    for example ,i=0 j=1 means the initial piece is located in row 0 and column 0 in the board, so it is piece white giant
     public Piece piece(int i, int j) {
         if (i == 0 && j == 1) {
             piece = new Giant("white");
@@ -58,6 +64,8 @@ public class GlobalVariables {
             piece = new Mage("white");
         } else if (i == 0 && j == 4) {
             piece = new Archer("white");
+//    for example ,i=1 j=1 means the initial piece is located in row 1 and column 1 in the board, so it is piece white knight
+//    and it's twin piece is in row 1 column 3
         } else if (i == 1 && j == 1) {
             piece = new Knight("white", 1, 1, 1, 3);
         } else if (i == 1 && j == 2) {

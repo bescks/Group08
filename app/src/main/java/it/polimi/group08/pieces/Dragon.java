@@ -5,7 +5,7 @@ package it.polimi.group08.pieces;
  */
 
 public class Dragon extends Piece {
-
+    //  The following is some values to declare piece dragon
     public Dragon(String c) {
         super(6, 3, "+", "flight", 2, 3, "+", c, "0");
         super.imageName ="piece_dragon";
