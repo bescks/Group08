@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        backgroundMusic.start();
+        musicStart();
 
     }
 
@@ -43,21 +43,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         app = ((MyApplication) getApplicationContext());
-        app.musicIndex = true;
-        app.sfxIndex = true;
         backgroundMusic = MediaPlayer.create(this, R.raw.main_background);
         backgroundMusic.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        if (app.musicIndex) {
-            backgroundMusic.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    mediaPlayer.setLooping(true);
-                    mediaPlayer.start();
-                }
-            });
-        }
-
-
+        musicStart();
         findViewById(R.id.activity_main).getBackground().setAlpha(230);
         findViewById(R.id.bn_new_game).getBackground().setAlpha(150);
         animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.translate_from_left);
@@ -96,6 +84,15 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
+    }
+
+
+    private void musicStart() {
+        if (app.musicIndex) {
+            backgroundMusic.start();
+        } else {
+            backgroundMusic.pause();
+        }
     }
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -144,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+
     }
 
     public void HighScoreActivity(View view) {

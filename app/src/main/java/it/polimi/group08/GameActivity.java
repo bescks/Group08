@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import it.polimi.group08.boards.Chessboard;
+import it.polimi.group08.pieces.Piece;
 
 
 public class GameActivity extends AppCompatActivity {
@@ -88,9 +89,6 @@ public class GameActivity extends AppCompatActivity {
     int vitalityLeft;
     int vitalityRight;
 
-    boolean sfxIndex;
-    boolean musciIndex;
-
     int fromX;
     int fromY;
     String action = "";
@@ -102,21 +100,21 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onPause();
-        backgroundMusic.pause();
+        musicStart(false);
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        backgroundMusic.start();
+        musicStart(true);
 
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        backgroundMusic.stop();
+        musicStart(false);
     }
 
     @Override
@@ -210,22 +208,10 @@ public class GameActivity extends AppCompatActivity {
         initCellBoard();
 
         refreshPieceInfo(false, 0, 0);
-
-        musciIndex = app.musicIndex;
-        sfxIndex = app.sfxIndex;
-
-
         backgroundMusic = MediaPlayer.create(this, R.raw.game_background);
         backgroundMusic.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        if (musciIndex) {
-            backgroundMusic.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    mediaPlayer.setLooping(true);
-                    mediaPlayer.start();
-                }
-            });
-        }
+
+        musicStart(true);
         gameStart();
     }
 
@@ -470,7 +456,11 @@ public class GameActivity extends AppCompatActivity {
         if (index) {
             if (chessboard.movePlayerInt == 1) {
                 if (chessboard.boardPiece[cellX][cellY].state.equals("f")) {
-                    tv_vitality_white.setText("" + chessboard.boardPiece[cellX][cellY].vitality + "/" + chessboard.boardPiece[cellX][cellY].getInitVitality() + "(" + chessboard.frozenPieceStr.substring(2, 3) + ")");
+                    if (chessboard.boardPiece[cellX][cellY].getTypeInt() == 1) {
+                        tv_vitality_white.setText("" + chessboard.boardPiece[cellX][cellY].vitality + "/" + chessboard.boardPiece[cellX][cellY].getInitVitality() + "(" + chessboard.frozenPieceStr.substring(2, 3) + ")");
+                    } else {
+                        tv_vitality_white.setText("" + chessboard.boardPiece[cellX][cellY].vitality + "/" + chessboard.boardPiece[cellX][cellY].getInitVitality() + "(" + chessboard.frozenPieceStr.substring(5, 6) + ")");
+                    }
                 } else {
                     tv_vitality_white.setText("" + chessboard.boardPiece[cellX][cellY].vitality + "/" + chessboard.boardPiece[cellX][cellY].getInitVitality());
                 }
@@ -533,7 +523,11 @@ public class GameActivity extends AppCompatActivity {
                 }
             } else {
                 if (chessboard.boardPiece[cellX][cellY].state.equals("f")) {
-                    tv_vitality_black.setText("" + chessboard.boardPiece[cellX][cellY].vitality + "/" + chessboard.boardPiece[cellX][cellY].getInitVitality() + "(" + chessboard.frozenPieceStr.substring(5, 6) + ")");
+                    if (chessboard.boardPiece[cellX][cellY].getTypeInt() == 1) {
+                        tv_vitality_black.setText("" + chessboard.boardPiece[cellX][cellY].vitality + "/" + chessboard.boardPiece[cellX][cellY].getInitVitality() + "(" + chessboard.frozenPieceStr.substring(2, 3) + ")");
+                    } else {
+                        tv_vitality_black.setText("" + chessboard.boardPiece[cellX][cellY].vitality + "/" + chessboard.boardPiece[cellX][cellY].getInitVitality() + "(" + chessboard.frozenPieceStr.substring(5, 6) + ")");
+                    }
                 } else {
                     tv_vitality_black.setText("" + chessboard.boardPiece[cellX][cellY].vitality + "/" + chessboard.boardPiece[cellX][cellY].getInitVitality());
                 }
@@ -862,7 +856,40 @@ public class GameActivity extends AppCompatActivity {
                             break;
                         }
                         case "R": {
+                            boolean combatindex = false;
+                            int combatMovePlayerInt = 0;
+                            int combatAtkStrL = 0;
+                            int combatVitalityL = 0;
+                            int combatTypeIntL = 0;
+                            int combatAtkStrR = 0;
+                            int combatVitalityR = 0;
+                            int combatTypeIntR = 0;
+                            if (chessboard.boardPiece[cellX][cellY].getTypeInt() != chessboard.movePlayerInt) {
+                                Piece revivedPiece = new Piece();
+                                for (int i = 0; i < 2; i++) {
+                                    for (int j = 0; j < 8; j++) {
+                                        if (chessboard.playerPiece[i][j].getInitPositionX() == cellX && chessboard.playerPiece[i][j].getInitPositionY() == cellY)
+                                            revivedPiece = chessboard.playerPiece[i][j];
+                                    }
+                                }
+                                combatindex = true;
+                                combatMovePlayerInt = chessboard.movePlayerInt;
+                                combatAtkStrL = revivedPiece.getAttackStrength();
+                                combatVitalityL = revivedPiece.getInitVitality();
+                                combatTypeIntL = revivedPiece.getPlayerY();
+
+                                if (!chessboard.boardPiece[cellX][cellY].state.equals("f")) {
+                                    combatAtkStrR = chessboard.boardPiece[cellX][cellY].getAttackStrength();
+                                }
+                                combatVitalityR = chessboard.boardPiece[cellX][cellY].vitality;
+                                combatTypeIntR = chessboard.boardPiece[cellX][cellY].getPlayerY();
+                            }
+
+
                             if (chessboard.isAction(action + (cellX + 1) + (cellY + 1) + 0 + 0)) {
+                                if (combatindex) {
+                                    combatAnimation(combatMovePlayerInt, combatAtkStrL, combatVitalityL, combatTypeIntL, combatAtkStrR, combatVitalityR, combatTypeIntR);
+                                }
                                 actionIndex = true;
                                 playSfx(R.raw.spell_revive);
                             } else {
@@ -1264,7 +1291,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void playSfx(int resId) {
-        if (sfxIndex) {
+        if (app.sfxIndex) {
             mp = MediaPlayer.create(getBaseContext(), resId);
             mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -1281,6 +1308,22 @@ public class GameActivity extends AppCompatActivity {
 
                 }
             });
+        }
+    }
+
+    private void musicStart(boolean index) {
+        if (index) {
+            if (app.musicIndex) {
+                backgroundMusic.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mediaPlayer) {
+                        mediaPlayer.setLooping(true);
+                        mediaPlayer.start();
+                    }
+                });
+            }
+        } else {
+            backgroundMusic.stop();
         }
     }
 

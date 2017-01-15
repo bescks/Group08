@@ -27,21 +27,21 @@ public class HighScoreActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onPause();
-        backgroundMusic.pause();
+        musicStart(false);
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        backgroundMusic.start();
+        musicStart(true);
 
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        backgroundMusic.stop();
+        musicStart(false);
     }
 
     @Override
@@ -52,15 +52,7 @@ public class HighScoreActivity extends AppCompatActivity {
         app = ((MyApplication) getApplicationContext());
         backgroundMusic = MediaPlayer.create(this, R.raw.high_score_background);
         backgroundMusic.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        if (app.musicIndex) {
-            backgroundMusic.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    mediaPlayer.setLooping(true);
-                    mediaPlayer.start();
-                }
-            });
-        }
+        musicStart(true);
         GridLayout gl_high_score = (GridLayout) findViewById(R.id.gl_high_score);
 
         for (int i = 0; i < 12; i++) {
@@ -168,7 +160,21 @@ public class HighScoreActivity extends AppCompatActivity {
 
     }
 
-
+    private void musicStart(boolean index) {
+        if (index) {
+            if (app.musicIndex) {
+                backgroundMusic.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mediaPlayer) {
+                        mediaPlayer.setLooping(true);
+                        mediaPlayer.start();
+                    }
+                });
+            }
+        } else {
+            backgroundMusic.stop();
+        }
+    }
 
 
 }

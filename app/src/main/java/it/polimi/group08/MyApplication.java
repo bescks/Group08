@@ -22,7 +22,8 @@ public class MyApplication extends Application {
         super.onCreate();
         //  Set font for whole app
         FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Supercell-Magic_5.ttf");
-
+        musicIndex = true;
+        sfxIndex = true;
     }
 
     public MyApplication() {

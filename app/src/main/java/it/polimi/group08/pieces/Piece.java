@@ -5,20 +5,29 @@ package it.polimi.group08.pieces;
  */
 
 public class Piece {
-
+//    the type of empty piece is 0, others are g,d,m,a,k,s,G,D,M,A,K,S
     String type = "0";
+//    typeInt is used to transfer white and black to integer
+// 0 means the piece is an empty piece
+// 1 means the piece is belong to white
+// -1 means the piece is belong to black
     private int typeInt = 0;
     public String state = "d";
     private int initialVitality = 0;
     public int vitality = 0;
     private int moveRange = 0;
+//  * means the direction is any, + means the direction is horiz + vert, x means the direction is diagnal
     private String moveDirections = "";
     private String moveType = "";
     private int attackRange = 0;
     private int attackStrength = 0;
     private String attackDirections = "";
+//    initpositionX means the initial x-coordniate of this piece
+//    initpositionY means the initial y-coordniate of this piece
     int initPositionX = 0;
     int initPositionY = 0;
+//    twinPositionX means the x-coordniate of this piece's twin piece
+//    twinPositionY means the y-coordniate of this piece's twin piece
     int twinPositionX = 0;
     int twinPositionY = 0;
     int twinPlayerY = 0;

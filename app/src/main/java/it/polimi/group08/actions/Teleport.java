@@ -11,11 +11,14 @@ import it.polimi.group08.pieces.Piece;
 public class Teleport {
 
     public boolean isTeleported(int movPlayerInt, Piece[][] piece, int fromX, int fromY, int toX, int toY, Piece emptyPiece) {
+//        index  indict the action is invalid or valid
         boolean index = false;
         GlobalVariables gV = new GlobalVariables();
         Piece pieceMage = getPieceMage(movPlayerInt, piece, emptyPiece);
 
         if (pieceMage.getTypeInt() == 0) {
+//            the typeInt is 0 means there is no piece mage in the board piece
+//            the following error is different situations that the action cannot be executed
            System.out.println("ERROR:<Your mage is dead!>");
         } else if (!pieceMage.spells.substring(3, 4).equals("T")) {
            System.out.println("ERROR:<Spell heal has been casted!>");
@@ -34,11 +37,14 @@ public class Teleport {
         } else {
             index = true;
             pieceMage.spells = pieceMage.spells.replace('T', '0');
+//            Teleport to an empty cell
             if (piece[toX][toY].getTypeInt() == 0) {
                 piece[toX][toY] = piece[fromX][fromY];
                 piece[fromX][fromY] = emptyPiece;
             } else {
+//                Teleport to an enemy piece and two pieces will be in combat
                 switch (piece[fromX][fromY].state) {
+//                    according the different states of two pieces, the combat situation is different
                     case "f": {
                         piece[fromX][fromY].state = "d";
                         piece[fromX][fromY] = emptyPiece;
@@ -76,7 +82,7 @@ public class Teleport {
         }
         return index;
     }
-
+    // the following class is to get the class piece mage in the array class piece
     private Piece getPieceMage(int movPlayerInt, Piece[][] piece, Piece emptyPiece) {
         Piece pieceMage = emptyPiece;
         for (int i = 0; i < 6; i++) {

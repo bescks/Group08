@@ -15,6 +15,7 @@ import it.polimi.group08.pieces.Piece;
 public class Move {
 
     public boolean isMoved(int movPlayerInt, Piece[][] piece, int fromX, int fromY, int toX, int toY, Piece emptyPiece) {
+//        index  indict the action is invalid or valid
         boolean index = false;
 
         if (piece[fromX][fromY].getTypeInt() == 0) {
@@ -27,14 +28,17 @@ public class Move {
             if (piece[toX][toY].getTypeInt() == movPlayerInt) {
                 System.out.println("ERROR:<You cannot move on friendly piece " + piece[toX][toY].getType() + " !>");
             } else if (isInRange(piece, fromX, fromY, toX, toY)) {
+//                The target cell is in the piece's move range
                 index = true;
+//                typeint =0 means the target cell is empty
                 if (piece[toX][toY].getTypeInt() == 0) {
                     piece[toX][toY] = piece[fromX][fromY];
                     piece[fromX][fromY] = emptyPiece;
                 } else {
-                    // in combat
+                    // piece and target cell are in combat
                     switch (piece[toX][toY].state) {
                         case "n": {
+//                            target piece's state is normal, the two pieces will be in combat
                             while (piece[fromX][fromY].vitality > 0 && piece[toX][toY].vitality > 0) {
                                 piece[fromX][fromY].vitality -= piece[toX][toY].getAttackStrength();
                                 piece[toX][toY].vitality -= piece[fromX][fromY].getAttackStrength();
@@ -50,7 +54,9 @@ public class Move {
                             }
                             break;
                         }
+//                        target piece's state is frozen
                         case "f": {
+
                             piece[toX][toY] = piece[fromX][fromY];
                             piece[fromX][fromY] = emptyPiece;
                             break;
@@ -64,7 +70,7 @@ public class Move {
 
     public Set getAvailCells(Piece[][] piece, int fromX, int fromY) {
 /**
- *     According to all the pieces' position, initializing boardState in a 6*6 dimension array. White pieces is set to 1,black pieces is set to -1 and empty cell is set to 0.Multiply the values of two pieces in boardState and compare  the result.
+ *     According to all the pieces' position, initializing board in a 6*6 dimension array. White pieces is set to 1,black pieces is set to -1 and empty cell is set to 0.Multiply the values of two pieces in boardState and compare  the result.
  *     The result is equal to 1 means the two pieces from same player.
  *     The result is equal to -1 means the two pieces from different player.
  *     The result is equal to 0 means the one of the pieces is not be occupied..
@@ -84,6 +90,7 @@ public class Move {
         String position = "" + (fromX) + (fromY);
 
         switch (movPiece.getMoveDirections()) {
+//            * means the piece's move direction is any
             case "*": {
                 //  For the piece whose move directions is any, calculate the available  move cells without regard to move block problem
                 switch (movPiece.getMoveType()) {
@@ -106,6 +113,7 @@ public class Move {
  *    Third Step, for all of cells in moveCellsMap, set i=i+1 and repeat the first and second step until i is equals to the moveRange of this piece.
  *    Finally, all the cells in moveCellsMap and mobeCellsMapEnemy is the piece can be reached.
  */
+
                         String rCell;
                         int rCellX;
                         int rCellY;
@@ -139,11 +147,9 @@ public class Move {
                                                     } else if ((Integer.valueOf(moveCellsMap.get(aroundCell).toString()) > i)) {
                                                         moveCellsMap.put(aroundCell, i);
                                                     }
-//                                        else {System.out.println("repetitive cells");}
                                                 }
                                             }
                                         }
-//                            else {System.out.println("Drop");}
                                     }
                                 }
                             }
@@ -161,10 +167,17 @@ public class Move {
                 }
                 break;
             }
+//            + means the piece's move direction is horizontal +vertical
             case "+": {
                 switch (movPiece.getMoveType()) {
                     case "walk": {
-                        //  remove cells in the situation of move block
+/**
+ *    The Following code is designed to remove cells in the situation of move block
+ *    First Step, excluding cells occupied by the same player and considering all the left cells that the piece can reach within moveRange=1, set integer i = 1).
+ *    Second Step, for all of the cells got in the first step,the cells occupied by enemy pieces are add into  moveCellsMapEnemy and others together with integer i are add into moveCellsMap.
+ *    Third Step, for all of cells in moveCellsMap, set i=i+1 and repeat the first and second step until i is equals to the moveRange of this piece.
+ *    Finally, all the cells in moveCellsMap and mobeCellsMapEnemy is the piece can be reached.
+ */
                         String k;
                         for (int i = 0; i < 6; i++) {
                             for (int j = 0; j < 6; j++) {
@@ -215,11 +228,11 @@ public class Move {
                                                     } else if ((Integer.valueOf(moveCellsMap.get(aroundCell).toString()) > i)) {
                                                         moveCellsMap.put(aroundCell, i);
                                                     }
-//                                            else {System.out.println("repetitive cells");}
+//
                                                 }
                                             }
                                         }
-//                            else {System.out.println("Drop");}
+//
                                     }
                                 }
                             }
@@ -228,7 +241,7 @@ public class Move {
                         break;
                     }
                     case "flight": {
-                        // For the fly type, move block is not in consideration
+// For the fly type, move block is should not in consideration
                         int distance;
                         String k;
                         for (int i = 0; i < 6; i++) {
@@ -254,10 +267,6 @@ public class Move {
             default:
                 System.out.println("ERROR:<Piece " + movPiece.getType() + " has an invalid moveDirections " + movPiece.getMoveDirections() + " !>");
         }
-        /*System.out.println("moveCellsMap=" + moveCellsMap.toString());
-        System.out.println("moveCellsSet=" + moveCellsSet.toString());
-        System.out.println("moveCellsMapEnemy=" + moveCellsMapEnemy.toString());*/
-
         moveCellsMap.putAll(moveCellsMapEnemy);
         return moveCellsMap.keySet();
     }
@@ -267,6 +276,7 @@ public class Move {
         if (piece[fromX][fromY].getMoveRange() == 0) {
             System.out.println("ERROR:<Piece " + piece[fromX][fromY].getType() + " do not have move action!>");
         } else {
+//            getMoveCells is the set of all the cells that piece[fromX][fromY] can reanch
             Set getMoveCells = getAvailCells(piece, fromX, fromY);
             if (getMoveCells.contains("" + toX + toY)) {
                 index = true;
