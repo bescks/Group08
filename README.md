@@ -13,47 +13,49 @@ __Members:__
 3. As Dongjie's phone have physical navigation button, we set all activities in immersive mode
 
 
-Instruction to the Game:
-****MainActivity:
+# Instruction to the Game:</br> #
 
-New Game: create an new GameActivity and start a game
-High Scores: Show the top 12 high scores of the past game
-Music: The background music will be start when this switch is checked, otherwise, the music will be stop
-SFx: The sfx music include attack sound, summon sound, applause sound and so on
 
-****GameActivity:
+## MainActivity: ##
 
-Action Instruction:
-Move & Attack:
+   - New Game: create an new GameActivity and start a game
+   - High Scores: Show the top 12 high scores of the past game
+   - Music: The background music will be start when this switch is checked, otherwise, the music will be stop
+   - SFx: The sfx music include attack sound, summon sound, applause sound and so on
+
+## GameActivity: ##
+
+__Action Instruction:__
+#### Move & Attack: ####
     1. Select your own piece
     2. If the piece have available move(attack) cells, the move(attack) button will be light
     3. Click the move(attack) button, all the available cells will be shown
     4. Select a valid piece
-Freeze & Heal:
+#### Freeze & Heal: ####
     1. Click the Freeze(Heal) button;
     2. Select a valid piece
-Revive:
+#### Revive:
     1. Click the Revive button
     2. If there are  available revived piece, the piece will be shown in the board
     3. Select a valid piece
-Teleport:
+#### Teleport: ####
     1. Click the Teleport button
     2. Select your own valid piece
     3. Select the destination
 
    For all actions, if you select an invalid piece or your action is invalid, your will hear a sound for invalid action and the action will be cancelled immediately.
 
-   Combat:
+##### Combat: ####
    If the combat is happened is in your turn, the combat animation's direction will face to you, otherwise, it will rotate 180 degrees.
 
-   Piece Information:
+   __Piece Information:__
    In your turn, you can check the state of all pieces, including your opponent pieces.
    Click the piece, and it's information will be shown in your area.
    If the piece is frozen, the left turns that the piece can unfrozen after will be appended to it's vitality.
    However, if it is your opponent turn, you can do nothing.
 
 
-****HighScoreActivity:
+## HighScoreActivity: ##
 
 This activity will show top 12 high scores of the past history.
 When you firstly install the apk, there is no history in the database, so all of the texts will be set to show it's initial text.
