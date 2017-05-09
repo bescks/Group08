@@ -45,7 +45,7 @@ __Action Instruction:__
 
    For all actions, if you select an invalid piece or your action is invalid, your will hear a sound for invalid action and the action will be cancelled immediately.
 
-##### Combat: ####
+##### Combat: #####
    If the combat is happened is in your turn, the combat animation's direction will face to you, otherwise, it will rotate 180 degrees.
 
    __Piece Information:__
