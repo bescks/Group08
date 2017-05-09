@@ -34,7 +34,7 @@ __Action Instruction:__
 #### Freeze & Heal: ####
     1. Click the Freeze(Heal) button;
     2. Select a valid piece
-#### Revive:
+#### Revive: ####
     1. Click the Revive button
     2. If there are  available revived piece, the piece will be shown in the board
     3. Select a valid piece
@@ -45,18 +45,18 @@ __Action Instruction:__
 
    For all actions, if you select an invalid piece or your action is invalid, your will hear a sound for invalid action and the action will be cancelled immediately.
 
-##### Combat: #####
+#### Combat: ####
    If the combat is happened is in your turn, the combat animation's direction will face to you, otherwise, it will rotate 180 degrees.
 
-   __Piece Information:__
-   In your turn, you can check the state of all pieces, including your opponent pieces.
-   Click the piece, and it's information will be shown in your area.
-   If the piece is frozen, the left turns that the piece can unfrozen after will be appended to it's vitality.
-   However, if it is your opponent turn, you can do nothing.
+__Piece Information:__
+  1. In your turn, you can check the state of all pieces, including your opponent pieces.
+  2. Click the piece, and it's information will be shown in your area.  
+  3. If the piece is frozen, the left turns that the piece can unfrozen after will be appended to it's vitality.
+  4. However, if it is your opponent turn, you can do nothing.
 
 
 ## HighScoreActivity: ##
 
-This activity will show top 12 high scores of the past history.
-When you firstly install the apk, there is no history in the database, so all of the texts will be set to show it's initial text.
-Only when you finished a game(Black win, White win, or Draw), the data of the your game will be added to database.
+    1. This activity will show top 12 high scores of the past history.
+    2. When you firstly install the apk, there is no history in the database, so all of the texts will be set to show it's initial text.
+    3. Only when you finished a game(Black win, White win, or Draw), the data of the your game will be added to database.
